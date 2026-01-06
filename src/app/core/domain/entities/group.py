@@ -9,11 +9,3 @@ class GroupDB:
     user_id: int
     summary: str = ""
     notes: List[NoteDB] = field(default_factory=list)
-
-    def refresh_summary(self):
-        if not self.notes:
-            self.summary = "Brak notatek w grupie."
-            return
-            
-        titles = [n.title for n in self.notes]
-        self.summary = f"Grupa zawiera {len(self.notes)} notatek: " + ", ".join(titles)

@@ -15,6 +15,11 @@ class INoteRepository(ABC):
         pass
 
     @abstractmethod
+    def get_user_by_name(self, username: str) -> Optional[UserDB]:
+        """Pobiera użytkownika po nazwie."""
+        pass
+
+    @abstractmethod
     def update_user(self, user_db: UserDB) -> Optional[int]:
         """Aktualizuje dane użytkownika."""
         pass
@@ -49,6 +54,11 @@ class INoteRepository(ABC):
     @abstractmethod
     def get_note(self, note_id: int) -> Optional[NoteDB]:
         """Pobiera pojedynczą notatkę."""
+        pass
+
+    @abstractmethod
+    def get_notes_by_user(self, user_id: int) -> List[NoteDB]:
+        """Pobiera wszystkie notatki użytkownika."""
         pass
 
     @abstractmethod

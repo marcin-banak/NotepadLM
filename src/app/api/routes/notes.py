@@ -1,68 +1,139 @@
 """Note routes."""
 
 from fastapi import APIRouter, Depends, HTTPException, status
-
-from ...core.domain.entities.user import User
-from ...core.domain.value_objects.ids import NoteId
-from ...core.services.notes.create_note import CreateNoteUseCase
-from ...core.services.notes.delete_note import DeleteNoteUseCase
-from ...api.schemas.notes import CreateNoteRequest, NoteResponse
-from ...api.dependencies import get_current_user
-from ...infrastructure.bootstrap import (
-    get_create_note_use_case,
-    get_delete_note_use_case,
-)
+from typing import Annotated, List
+from app.api.schemas.note import NoteCreate, NoteResponse, NoteUpdate
+from app.core.services.note_service import NoteService
+from app.core.domain.entities.user import UserDB
+from app.dependencies import get_note_service, get_current_user
 
 router = APIRouter(prefix="/notes", tags=["notes"])
 
 
-@router.post("", response_model=NoteResponse)
-def create_note(
-    request: CreateNoteRequest,
-    current_user: User = Depends(get_current_user),
-    create_use_case: CreateNoteUseCase = Depends(get_create_note_use_case),
+@router.post("", response_model=NoteResponse, status_code=status.HTTP_201_CREATED)
+async def create_note(
+    note_data: NoteCreate,
+    current_user: Annotated[UserDB, Depends(get_current_user)],
+    note_service: Annotated[NoteService, Depends(get_note_service)]
 ):
     """Create a new note."""
-    try:
-        note = create_use_case.execute(
-            user_id=current_user.id,
-            title=request.title,
-            content=request.content,
+    note_id = note_service.create_note(
+        title=note_data.title,
+        content=note_data.content,
+        user_id=current_user.id,
+        group_id=note_data.group_id
+    )
+    note = note_service.get_note(note_id, current_user.id)
+    if note is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to create note"
         )
-        
-        return NoteResponse(
-            id=str(note.id),
-            user_id=str(note.user_id),
-            group_id=str(note.group_id) if note.group_id else None,
+    return NoteResponse(
+        id=note.id,
+        title=note.title,
+        content=note.content,
+        user_id=note.user_id,
+        group_id=note.group_id,
+        created_at=note.created_at,
+        updated_at=note.updated_at
+    )
+
+
+@router.get("", response_model=List[NoteResponse])
+async def list_notes(
+    current_user: Annotated[UserDB, Depends(get_current_user)],
+    note_service: Annotated[NoteService, Depends(get_note_service)]
+):
+    """List all notes for the current user."""
+    notes = note_service.get_notes_by_user(current_user.id)
+    return [
+        NoteResponse(
+            id=note.id,
             title=note.title,
             content=note.content,
+            user_id=note.user_id,
+            group_id=note.group_id,
             created_at=note.created_at,
-            updated_at=note.updated_at,
+            updated_at=note.updated_at
         )
-    
-    except ValueError as e:
+        for note in notes
+    ]
+
+
+@router.get("/{note_id}", response_model=NoteResponse)
+async def get_note(
+    note_id: int,
+    current_user: Annotated[UserDB, Depends(get_current_user)],
+    note_service: Annotated[NoteService, Depends(get_note_service)]
+):
+    """Get a specific note by ID."""
+    note = note_service.get_note(note_id, current_user.id)
+    if note is None:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e),
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Note not found"
         )
+    return NoteResponse(
+        id=note.id,
+        title=note.title,
+        content=note.content,
+        user_id=note.user_id,
+        group_id=note.group_id,
+        created_at=note.created_at,
+        updated_at=note.updated_at
+    )
+
+
+@router.put("/{note_id}", response_model=NoteResponse)
+async def update_note(
+    note_id: int,
+    note_data: NoteUpdate,
+    current_user: Annotated[UserDB, Depends(get_current_user)],
+    note_service: Annotated[NoteService, Depends(get_note_service)]
+):
+    """Update a note."""
+    updated_id = note_service.update_note(
+        note_id=note_id,
+        user_id=current_user.id,
+        title=note_data.title,
+        content=note_data.content,
+        group_id=note_data.group_id
+    )
+    if updated_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Note not found or access denied"
+        )
+    note = note_service.get_note(updated_id, current_user.id)
+    if note is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to retrieve updated note"
+        )
+    return NoteResponse(
+        id=note.id,
+        title=note.title,
+        content=note.content,
+        user_id=note.user_id,
+        group_id=note.group_id,
+        created_at=note.created_at,
+        updated_at=note.updated_at
+    )
 
 
 @router.delete("/{note_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_note(
-    note_id: str,
-    current_user: User = Depends(get_current_user),
-    delete_use_case: DeleteNoteUseCase = Depends(get_delete_note_use_case),
+async def delete_note(
+    note_id: int,
+    current_user: Annotated[UserDB, Depends(get_current_user)],
+    note_service: Annotated[NoteService, Depends(get_note_service)]
 ):
     """Delete a note."""
-    try:
-        delete_use_case.execute(
-            note_id=NoteId(note_id),
-            user_id=current_user.id,
-        )
-    
-    except ValueError as e:
+    success = note_service.delete_note(note_id, current_user.id)
+    if not success:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e),
+            detail="Note not found or access denied"
         )
+    return None
 
