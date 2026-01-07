@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
-from app.core.domain.entities import UserDB, NoteDB, GroupDB
+from app.core.domain.database import UserDB, NoteDB, GroupDB
 
 class INoteRepository(ABC):
     # --- USER OPERATIONS ---
