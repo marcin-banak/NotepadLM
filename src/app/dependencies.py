@@ -3,13 +3,14 @@
 from typing import Annotated
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from app.infrastructure.bootstrap import SessionLocal
-from app.infrastructure.database.repository import AppRepository
-from app.core.domain.repositories.repository import INoteRepository
+from app.infrastructure.bootstrap import database_repository#, vector_store, clusterizer
+from app.core.domain.database import INoteRepository
+from app.core.domain.vectorstore import IVectorStore
+from app.core.domain.clusterization import IClusterizer
 from app.core.services.user_service import UserService
 from app.core.services.note_service import NoteService
 from app.core.services.auth_service import decode_access_token
-from app.core.domain.entities.user import UserDB
+from app.core.domain.database import UserDB
 
 # Security scheme
 security = HTTPBearer()
@@ -17,7 +18,7 @@ security = HTTPBearer()
 
 def get_repository() -> INoteRepository:
     """Get repository instance."""
-    return AppRepository(SessionLocal)
+    return database_repository
 
 
 def get_user_service(repository: Annotated[INoteRepository, Depends(get_repository)]) -> UserService:
@@ -29,6 +30,15 @@ def get_note_service(repository: Annotated[INoteRepository, Depends(get_reposito
     """Get note service instance."""
     return NoteService(repository)
 
+
+def get_vector_store() -> IVectorStore:
+    """Get vector store instance."""
+    return vector_store
+
+
+def get_clusterizer() -> IClusterizer:
+    """Get clusterizer instance."""
+    return clusterizer
 
 async def get_current_user(
     credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)],

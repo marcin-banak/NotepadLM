@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from typing import Annotated, List
 from app.api.schemas.note import NoteCreate, NoteResponse, NoteUpdate
 from app.core.services.note_service import NoteService
-from app.core.domain.entities.user import UserDB
+from app.core.domain.database import UserDB
 from app.dependencies import get_note_service, get_current_user
 
 router = APIRouter(prefix="/notes", tags=["notes"])

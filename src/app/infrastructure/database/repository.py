@@ -2,8 +2,8 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker, Session
 from typing import List, Optional, Type, Any, Callable
 
-from app.core.domain.entities import UserDB, NoteDB, GroupDB
-from app.core.domain.repositories import INoteRepository
+from app.core.domain.database import UserDB, NoteDB, GroupDB
+from app.core.domain.database import INoteRepository
 from app.infrastructure.database.models import User, Group, Note
 
 class AppRepository(INoteRepository):

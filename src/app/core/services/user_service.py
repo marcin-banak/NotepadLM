@@ -1,8 +1,8 @@
 """User service for user registration and authentication."""
 
 from typing import Optional
-from app.core.domain.entities.user import UserDB
-from app.core.domain.repositories.repository import INoteRepository
+from app.core.domain.database import UserDB
+from app.core.domain.database import INoteRepository
 from app.core.services.auth_service import hash_password, verify_password, create_access_token
 
 

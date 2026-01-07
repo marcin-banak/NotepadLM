@@ -1,8 +1,8 @@
 """Note service for note-related operations."""
 
 from typing import List, Optional
-from app.core.domain.entities.note import NoteDB
-from app.core.domain.repositories.repository import INoteRepository
+from app.core.domain.database import NoteDB
+from app.core.domain.database import INoteRepository
 
 
 class NoteService:
