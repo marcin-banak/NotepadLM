@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -120,23 +120,54 @@ class VectorStore(IVectorStore):
             ))
         return results
 
-    def retrieve_chunks(self, query: str, user_id: int, k: int = 4) -> List[NoteVS]:
+    # def retrieve_chunks(self, query: str, user_id: int, k: int = 4) -> List[NoteVS]:
+    #     store = self._get_store(self.chunked_notes_dir, "note_chunks")
+        
+    #     # E5 wymaga prefiksu 'query: ' dla zapytania
+    #     relevant_chunks = store.similarity_search(
+    #         query=f"query: {query}",
+    #         k=k,
+    #         filter={"user_id": user_id}
+    #     )
+        
+    #     return [NoteVS(
+    #         id=int(chunk.metadata["parent_note_id"]),
+    #         chunk_id=int(chunk.metadata["chunk_id"]),
+    #         user_id=int(chunk.metadata["user_id"]),
+    #         content=chunk.page_content,
+    #         embedding=None
+    #     ) for chunk in relevant_chunks]
+
+    def retrieve_chunks(self, query: str, user_id: int, k: int = 10, threshold: float = 0.7) -> List[Tuple[NoteVS, float]]:
         store = self._get_store(self.chunked_notes_dir, "note_chunks")
         
-        # E5 wymaga prefiksu 'query: ' dla zapytania
-        relevant_chunks = store.similarity_search(
+        results = store.similarity_search_with_relevance_scores(
             query=f"query: {query}",
             k=k,
             filter={"user_id": user_id}
         )
         
-        return [NoteVS(
-            id=int(chunk.metadata["parent_note_id"]),
-            chunk_id=int(chunk.metadata["chunk_id"]),
-            user_id=int(chunk.metadata["user_id"]),
-            content=chunk.page_content,
-            embedding=None
-        ) for chunk in relevant_chunks]
+        best_chunks_map = {}
+
+        for doc, score in results:
+            print(f"Score: {score}")
+            if score < threshold:
+                continue
+                
+            note_id = int(doc.metadata["parent_note_id"])
+            
+            if note_id not in best_chunks_map or score > best_chunks_map[note_id][1]:
+                best_chunks_map[note_id] = (NoteVS(
+                    id=note_id,
+                    user_id=int(doc.metadata["user_id"]),
+                    chunk_id=int(doc.metadata["chunk_id"]),
+                    content=doc.page_content,
+                    embedding=None
+                ), score)
+
+        sorted_results = sorted(best_chunks_map.values(), key=lambda x: x[1], reverse=True)
+    
+        return sorted_results
 
     def delete_note(self, note_id: int):
         try:

@@ -8,6 +8,7 @@ import NotesPage from './pages/NotesPage';
 import NoteDetailPage from './pages/NoteDetailPage';
 import GroupsPage from './pages/GroupsPage';
 import GroupDetailPage from './pages/GroupDetailPage';
+import SearchPage from './pages/SearchPage';
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
@@ -58,6 +59,16 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <Layout>
               <GroupDetailPage />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/search"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <SearchPage />
             </Layout>
           </ProtectedRoute>
         }

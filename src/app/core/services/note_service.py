@@ -349,4 +349,125 @@ class NoteService:
             self._recalculate_groups(user_id)
         
         return success
+    
+    def query_relevant_notes(
+        self, 
+        query: str, 
+        user_id: int, 
+        k: int = 10, 
+        threshold: float = 0.4
+    ) -> List[dict]:
+        """Query for relevant notes with chunk markers.
+        
+        Args:
+            query: The search query string
+            user_id: The user ID to search notes for
+            k: Maximum number of chunks to retrieve
+            threshold: Minimum similarity score threshold
+            
+        Returns:
+            List of dicts with keys:
+                - note: NoteDB object
+                - chunk_text: The relevant chunk text
+                - chunk_start: Start position of chunk in note content
+                - chunk_end: End position of chunk in note content
+                - relevance_score: Similarity score for the chunk
+        """
+        # Retrieve relevant chunks from vectorstore
+        relevant_chunks_with_scores = self.vector_store.retrieve_chunks(query, user_id, k=k, threshold=threshold)
+        
+        results = []
+        seen_note_ids = set()
+        
+        for chunk_vs, relevance_score in relevant_chunks_with_scores:
+            # Skip if we've already processed this note
+            if chunk_vs.id in seen_note_ids:
+                continue
+            
+            # Get the full note from repository
+            note = self.repository.get_note(chunk_vs.id)
+            if not note or note.user_id != user_id:
+                continue
+            
+            # Find the chunk position in the note content
+            # Note: chunks are created from full_content = title + "\n" + content
+            # But we need to find the position in just the content field
+            chunk_text = chunk_vs.content
+            note_content = note.content or ""
+            note_title = note.title or ""
+            
+            # Reconstruct the full content as it was when chunked
+            full_content_for_chunking = f"{note_title}\n{note_content}" if note_title else note_content
+            
+            # Try to find the chunk in the full content (title + content)
+            chunk_start_in_full = full_content_for_chunking.find(chunk_text)
+            
+            # Calculate the offset: title length + newline if title exists
+            title_offset = len(note_title) + 1 if note_title else 0
+            
+            if chunk_start_in_full != -1:
+                # Chunk found in full content
+                if chunk_start_in_full >= title_offset:
+                    # Chunk is in the content part (not in title)
+                    chunk_start = chunk_start_in_full - title_offset
+                    chunk_end = chunk_start + len(chunk_text)
+                else:
+                    # Chunk starts in title, find where it overlaps into content
+                    # Find the part of chunk that's in content
+                    overlap_start = max(0, title_offset - chunk_start_in_full)
+                    chunk_start = 0
+                    chunk_end = len(chunk_text) - overlap_start
+            else:
+                # Try to find a substring match in content only
+                # Remove title prefix from chunk if it starts with title
+                chunk_in_content = chunk_text
+                if note_title and chunk_text.startswith(note_title):
+                    # Remove title and newline from start of chunk
+                    title_prefix = f"{note_title}\n"
+                    if chunk_text.startswith(title_prefix):
+                        chunk_in_content = chunk_text[len(title_prefix):]
+                
+                # Try to find the content part in note content
+                chunk_start = note_content.find(chunk_in_content)
+                chunk_end = chunk_start + len(chunk_in_content) if chunk_start != -1 else -1
+                
+                # If still not found, try fuzzy matching
+                if chunk_start == -1:
+                    min_match_length = max(50, int(len(chunk_in_content) * 0.7))
+                    for i in range(len(note_content) - min_match_length + 1):
+                        substring = note_content[i:i + len(chunk_in_content)]
+                        if len(substring) >= min_match_length:
+                            # Simple similarity check
+                            matches = sum(c1 == c2 for c1, c2 in zip(chunk_in_content[:len(substring)], substring))
+                            if matches / len(substring) > 0.7:
+                                chunk_start = i
+                                chunk_end = min(i + len(chunk_in_content), len(note_content))
+                                break
+                
+                # If still not found, estimate position based on chunk_id
+                if chunk_start == -1 and chunk_vs.chunk_id is not None:
+                    chunk_size = 1000
+                    chunk_overlap = 180
+                    # Estimate: each chunk after the first starts at (chunk_id * (chunk_size - chunk_overlap))
+                    # Account for title offset
+                    estimated_start_in_full = chunk_vs.chunk_id * (chunk_size - chunk_overlap)
+                    if estimated_start_in_full >= title_offset:
+                        estimated_start = estimated_start_in_full - title_offset
+                        chunk_start = min(estimated_start, len(note_content))
+                        chunk_end = min(chunk_start + len(chunk_in_content), len(note_content))
+                    else:
+                        chunk_start = 0
+                        chunk_end = min(len(chunk_in_content), len(note_content))
+            
+            results.append({
+                "note": note,
+                "chunk_text": chunk_text,
+                "chunk_start": chunk_start if chunk_start != -1 else 0,
+                "chunk_end": chunk_end if chunk_end != -1 else len(note_content),
+                "relevance_score": relevance_score
+            })
+            
+            seen_note_ids.add(chunk_vs.id)
+        
+        return results
 

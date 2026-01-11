@@ -48,18 +48,18 @@ from app.infrastructure.clusterization.clusterizer_config import UMAPConfig, HDB
 
 clusterizer_config = ClusterizerConfig(
     umap_config=UMAPConfig(
-        n_neighbors=5,
-        n_components=2,
+        n_neighbors=10,
+        n_components=5,
         min_dist=0.0,
         metric='cosine'
     ),
     hdbscan_config=HDBSCANConfig(
-        min_cluster_size=4,
+        min_cluster_size=8,
         metric='euclidean',
         prediction_data=True
     ),
     bertopic_config=BERTopicConfig(
-        min_topic_size=4,
+        min_topic_size=8,
         representation_model=llm,
         calculate_probabilities=False,
         verbose=True

@@ -43,3 +43,24 @@ class BulkNoteResponse(BaseModel):
     created: List[NoteResponse]
     failed: List[dict]
 
+
+class QueryRequest(BaseModel):
+    """Query request schema."""
+    query: str
+    k: Optional[int] = 10
+    threshold: Optional[float] = 0.4
+
+
+class QueryResult(BaseModel):
+    """Query result schema with chunk markers."""
+    note: NoteResponse
+    chunk_text: str
+    chunk_start: int
+    chunk_end: int
+    relevance_score: float
+
+
+class QueryResponse(BaseModel):
+    """Query response schema."""
+    results: List[QueryResult]
+

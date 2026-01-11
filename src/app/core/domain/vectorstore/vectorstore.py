@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 from app.core.domain.vectorstore.note import NoteVS
 from abc import ABC, abstractmethod
 
@@ -21,7 +21,12 @@ class IVectorStore(ABC):
         pass
 
     @abstractmethod
-    def retrieve_chunks(self, query: str, user_id: int, k: int = 4) -> List[NoteVS]:
+    def retrieve_chunks(self, query: str, user_id: int, k: int = 4, threshold: float = 0.4) -> List[Tuple[NoteVS, float]]:
+        """Retrieve relevant chunks with relevance scores.
+        
+        Returns:
+            List of tuples (NoteVS, relevance_score) sorted by relevance descending.
+        """
         pass
 
     @abstractmethod

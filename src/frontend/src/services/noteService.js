@@ -60,3 +60,19 @@ export const deleteNote = async (id) => {
   }
 };
 
+export const searchNotes = async (query, k = 10, threshold = 0.4) => {
+  try {
+    const response = await apiClient.post('/query', {
+      query,
+      k,
+      threshold,
+    });
+    return { success: true, data: response.data };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.detail || 'Failed to search notes',
+    };
+  }
+};
+

@@ -23,6 +23,9 @@ const Navbar = () => {
               <Link to="/groups" className="navbar-link">
                 Groups
               </Link>
+              <Link to="/search" className="navbar-link">
+                Search
+              </Link>
               {user && <span className="navbar-user">Hello, {user.name}</span>}
               <button onClick={handleLogout} className="btn btn-secondary">
                 Logout
