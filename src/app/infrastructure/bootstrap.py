@@ -1,12 +1,31 @@
+import os
+# Monkey-patch for bertopic compatibility with newer langchain versions
+# bertopic tries to import from langchain.docstore.document which doesn't exist in langchain >= 1.0
+import sys
+import types
+from langchain_core.documents import Document
+
+# Create a fake langchain.docstore module
+if 'langchain.docstore' not in sys.modules:
+    docstore_module = types.ModuleType('langchain.docstore')
+    docstore_module.document = types.ModuleType('langchain.docstore.document')
+    docstore_module.document.Document = Document
+    sys.modules['langchain.docstore'] = docstore_module
+    sys.modules['langchain.docstore.document'] = docstore_module.document
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 from app.infrastructure.database.models import Base
 from app.infrastructure.database.repository import AppRepository
 
+data_storage_path = "./data_storage"
+os.makedirs(data_storage_path, exist_ok=True)
+
 engine = create_engine(
-    "sqlite:///notepadlm.db",
+    f"sqlite:///{data_storage_path}/notepadlm.db",
     connect_args={"check_same_thread": False}
 )
 
@@ -17,11 +36,33 @@ Base.metadata.create_all(engine)
 database_repository = AppRepository(SessionLocal)
 
 
-# from app.infrastructure.vectorstore.vectorstore import VectorStore
+embeddings = HuggingFaceEmbeddings(model_name="intfloat/multilingual-e5-large")
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", api_key=os.getenv("GOOGLE_API_KEY"))
 
-# embeddings = "" # HuggingFaceEmbeddings(model_name="Multilingual-e5-large")
-# vector_store = VectorStore(embeddings)
+from app.infrastructure.vectorstore.vectorstore import VectorStore
 
-# from app.infrastructure.clusterization.clusterizer import NoteClusteringService
+vector_store = VectorStore(embeddings, f"{data_storage_path}/vector_storage")
 
-# clusterizer = NoteClusteringService(embeddings)
+from app.infrastructure.clusterization.clusterizer import Clusterizer
+from app.infrastructure.clusterization.clusterizer_config import UMAPConfig, HDBSCANConfig, BERTopicConfig, ClusterizerConfig
+
+clusterizer_config = ClusterizerConfig(
+    umap_config=UMAPConfig(
+        n_neighbors=5,
+        n_components=2,
+        min_dist=0.0,
+        metric='cosine'
+    ),
+    hdbscan_config=HDBSCANConfig(
+        min_cluster_size=4,
+        metric='euclidean',
+        prediction_data=True
+    ),
+    bertopic_config=BERTopicConfig(
+        min_topic_size=4,
+        representation_model=llm,
+        calculate_probabilities=False,
+        verbose=True
+    )
+)
+clusterizer = Clusterizer(embeddings, clusterizer_config)

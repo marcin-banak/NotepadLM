@@ -6,6 +6,8 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import NotesPage from './pages/NotesPage';
 import NoteDetailPage from './pages/NoteDetailPage';
+import GroupsPage from './pages/GroupsPage';
+import GroupDetailPage from './pages/GroupDetailPage';
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
@@ -36,6 +38,26 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <Layout>
               <NoteDetailPage />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/groups"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <GroupsPage />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/groups/:id"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <GroupDetailPage />
             </Layout>
           </ProtectedRoute>
         }

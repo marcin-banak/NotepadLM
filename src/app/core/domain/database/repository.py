@@ -74,4 +74,14 @@ class INoteRepository(ABC):
     def delete_group(self, group_id: int) -> bool: pass
     
     @abstractmethod
+    def delete_groups_by_user(self, user_id: int) -> bool:
+        """Deletes all groups belonging to a user."""
+        pass
+    
+    @abstractmethod
     def delete_note(self, note_id: int) -> bool: pass
+    
+    @abstractmethod
+    def update_note_group_id(self, note_id: int, group_id: Optional[int]) -> bool:
+        """Updates the group_id of a note."""
+        pass

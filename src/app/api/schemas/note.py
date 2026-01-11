@@ -1,7 +1,7 @@
 """Note schemas."""
 
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel
 
 
@@ -31,4 +31,15 @@ class NoteResponse(BaseModel):
     
     class Config:
         from_attributes = True
+
+
+class BulkNoteCreate(BaseModel):
+    """Bulk note creation request schema."""
+    notes: List[NoteCreate]
+
+
+class BulkNoteResponse(BaseModel):
+    """Bulk note creation response schema."""
+    created: List[NoteResponse]
+    failed: List[dict]
 

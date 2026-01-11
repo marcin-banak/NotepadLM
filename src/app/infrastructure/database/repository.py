@@ -145,8 +145,28 @@ class AppRepository(INoteRepository):
     def delete_group(self, group_id: int) -> bool:
         return self.delete_entity(Group, group_id)
 
+    def delete_groups_by_user(self, user_id: int) -> bool:
+        """Deletes all groups belonging to a user."""
+        with self._get_session() as session:
+            with session.begin():
+                stmt = select(Group).where(Group.user_id == user_id)
+                groups = session.scalars(stmt).all()
+                for group in groups:
+                    session.delete(group)
+                return True
+
     def delete_note(self, note_id: int) -> bool:
         return self.delete_entity(Note, note_id)
+
+    def update_note_group_id(self, note_id: int, group_id: Optional[int]) -> bool:
+        """Updates the group_id of a note."""
+        with self._get_session() as session:
+            with session.begin():
+                note = session.get(Note, note_id)
+                if note:
+                    note.group_id = group_id
+                    return True
+                return False
 
     # --- GENERIC OPERATIONS ---
     def _update_entity(self, entity_class: Type, entity_id: int, **kwargs) -> Optional[int]:

@@ -1,5 +1,5 @@
 from typing import List
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
@@ -14,29 +14,38 @@ class VectorStore(IVectorStore):
         
         # Konfiguracja splittera dla drugiego vectorstore
         self.splitter = RecursiveCharacterTextSplitter(
-            chunk_size=500,
-            chunk_overlap=50
+            chunk_size=1000,
+            chunk_overlap=180
         )
 
     def _get_store(self, path: str, collection: str) -> Chroma:
-        return Chroma(
-            persist_directory=path,
-            embedding_function=self.embeddings,
-            collection_name=collection
-        )
+        try:
+            store = Chroma(
+                persist_directory=path,
+                embedding_function=self.embeddings,
+                collection_name=collection
+            )
+            return store
+        except Exception as e:
+            raise
 
     # --- VECTORSTORE 1: PEŁNE NOTATKI ---
-    def upsert_full_note(self, notes: List[NoteVS]):
-        store = self._get_store(self.full_notes_dir, "full_notes")
-        docs = []
-        ids = []
-        for note in notes:
-            docs.append(Document(
-                page_content=note.content,
-                metadata={"user_id": note.user_id}
-            ))
-            ids.append(str(note.id))
-        store.add_documents(documents=docs, ids=ids)
+    def upsert_full_notes(self, notes: List[NoteVS]):
+        try:
+            store = self._get_store(self.full_notes_dir, "full_notes")
+            docs = []
+            ids = []
+            for note in notes:
+                doc = Document(
+                    page_content=note.content or "",
+                    metadata={"user_id": note.user_id}
+                )
+                docs.append(doc)
+                note_id_str = str(note.id) if note.id is not None else None
+                ids.append(note_id_str)
+            store.add_documents(documents=docs, ids=ids)
+        except Exception as e:
+            raise
 
     def get_full_notes(self, user_id: int) -> List[NoteVS]:
         store = self._get_store(self.full_notes_dir, "full_notes")
@@ -61,29 +70,35 @@ class VectorStore(IVectorStore):
         return results
 
     # --- VECTORSTORE 2: CHUNKI ---
-    def upsert_chunked_note(self, notes: List[NoteVS]):
-        store = self._get_store(self.chunked_notes_dir, "note_chunks")
-        
-        docs = []
-        chunk_ids = []
-        for note in notes:
-            store.delete(where={"parent_note_id": note.id})
-        
-        for note in notes:
-            chunks = self.splitter.split_text(note.content)
-            for i, chunk_text in enumerate(chunks):
-                docs.append(Document(
-                    page_content=chunk_text,
-                    metadata={
-                        "parent_note_id": note.id,
-                        "chunk_id": i,
-                        "user_id": note.user_id
-                    }
-                ))
-                chunk_ids.append(f"{note.id}_chunk_{i}")
+    def upsert_chunked_notes(self, notes: List[NoteVS]):
+        try:
+            store = self._get_store(self.chunked_notes_dir, "note_chunks")
+            
+            docs = []
+            chunk_ids = []
+            for note in notes:
+                try:
+                    store.delete(where={"parent_note_id": note.id})
+                except Exception as e:
+                    raise
+            
+            for note in notes:
+                chunks = self.splitter.split_text(note.content or "")
+                for i, chunk_text in enumerate(chunks):
+                    docs.append(Document(
+                        page_content=chunk_text,
+                        metadata={
+                            "parent_note_id": note.id,
+                            "chunk_id": i,
+                            "user_id": note.user_id
+                        }
+                    ))
+                    chunk_ids.append(f"{note.id}_chunk_{i}")
 
-        if docs:
-            store.add_documents(documents=docs, ids=chunk_ids)
+            if docs:
+                store.add_documents(documents=docs, ids=chunk_ids)
+        except Exception as e:
+            raise
 
     def get_chunked_notes(self, user_id: int) -> List[NoteVS]:
         store = self._get_store(self.chunked_notes_dir, "note_chunks")
@@ -124,8 +139,17 @@ class VectorStore(IVectorStore):
         ) for chunk in relevant_chunks]
 
     def delete_note(self, note_id: int):
-        full_store = self._get_store(self.full_notes_dir, "full_notes")
-        full_store.delete(ids=[str(note_id)])
-        
-        chunk_store = self._get_store(self.chunked_notes_dir, "note_chunks")
-        chunk_store.delete(where={"parent_note_id": note_id})
+        try:
+            full_store = self._get_store(self.full_notes_dir, "full_notes")
+            try:
+                full_store.delete(ids=[str(note_id)])
+            except Exception as e:
+                raise
+            
+            chunk_store = self._get_store(self.chunked_notes_dir, "note_chunks")
+            try:
+                chunk_store.delete(where={"parent_note_id": note_id})
+            except Exception as e:
+                raise
+        except Exception as e:
+            raise

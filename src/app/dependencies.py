@@ -3,7 +3,7 @@
 from typing import Annotated
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from app.infrastructure.bootstrap import database_repository#, vector_store, clusterizer
+from app.infrastructure.bootstrap import database_repository, vector_store, clusterizer
 from app.core.domain.database import INoteRepository
 from app.core.domain.vectorstore import IVectorStore
 from app.core.domain.clusterization import IClusterizer
@@ -26,11 +26,6 @@ def get_user_service(repository: Annotated[INoteRepository, Depends(get_reposito
     return UserService(repository)
 
 
-def get_note_service(repository: Annotated[INoteRepository, Depends(get_repository)]) -> NoteService:
-    """Get note service instance."""
-    return NoteService(repository)
-
-
 def get_vector_store() -> IVectorStore:
     """Get vector store instance."""
     return vector_store
@@ -39,6 +34,15 @@ def get_vector_store() -> IVectorStore:
 def get_clusterizer() -> IClusterizer:
     """Get clusterizer instance."""
     return clusterizer
+
+
+def get_note_service(
+    repository: Annotated[INoteRepository, Depends(get_repository)],
+    vector_store: Annotated[IVectorStore, Depends(get_vector_store)],
+    clusterizer: Annotated[IClusterizer, Depends(get_clusterizer)]
+) -> NoteService:
+    """Get note service instance."""
+    return NoteService(repository, vector_store, clusterizer)
 
 async def get_current_user(
     credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)],

@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import Annotated, List
-from app.api.schemas.note import NoteCreate, NoteResponse, NoteUpdate
+from app.api.schemas.note import NoteCreate, NoteResponse, NoteUpdate, BulkNoteCreate, BulkNoteResponse
 from app.core.services.note_service import NoteService
 from app.core.domain.database import UserDB
 from app.dependencies import get_note_service, get_current_user
@@ -37,6 +37,46 @@ async def create_note(
         group_id=note.group_id,
         created_at=note.created_at,
         updated_at=note.updated_at
+    )
+
+
+@router.post("/bulk", response_model=BulkNoteResponse, status_code=status.HTTP_201_CREATED)
+async def bulk_create_notes(
+    bulk_data: BulkNoteCreate,
+    current_user: Annotated[UserDB, Depends(get_current_user)],
+    note_service: Annotated[NoteService, Depends(get_note_service)]
+):
+    """Create multiple notes in a single request."""
+    # Convert NoteCreate objects to dicts for the service method
+    notes_data = [
+        {
+            "title": note.title,
+            "content": note.content,
+            "group_id": note.group_id
+        }
+        for note in bulk_data.notes
+    ]
+    
+    created_ids, failed_notes = note_service.bulk_create_notes(notes_data, current_user.id)
+    
+    # Fetch created notes to return in response
+    created_note_responses = []
+    for note_id in created_ids:
+        note = note_service.get_note(note_id, current_user.id)
+        if note:
+            created_note_responses.append(NoteResponse(
+                id=note.id,
+                title=note.title,
+                content=note.content,
+                user_id=note.user_id,
+                group_id=note.group_id,
+                created_at=note.created_at,
+                updated_at=note.updated_at
+            ))
+    
+    return BulkNoteResponse(
+        created=created_note_responses,
+        failed=failed_notes
     )
 
 
