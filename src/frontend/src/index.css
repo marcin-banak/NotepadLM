@@ -297,6 +297,8 @@ body {
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: var(--spacing-md);
+  gap: var(--spacing-md);
+  min-width: 0;
 }
 
 .note-card-title {
@@ -305,12 +307,16 @@ body {
   color: var(--text-primary);
   margin: 0;
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .note-card-actions {
   display: flex;
   gap: var(--spacing-sm);
-  margin-left: var(--spacing-md);
+  flex-shrink: 0;
 }
 
 .note-card-content {

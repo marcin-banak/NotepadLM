@@ -120,24 +120,6 @@ class VectorStore(IVectorStore):
             ))
         return results
 
-    # def retrieve_chunks(self, query: str, user_id: int, k: int = 4) -> List[NoteVS]:
-    #     store = self._get_store(self.chunked_notes_dir, "note_chunks")
-        
-    #     # E5 wymaga prefiksu 'query: ' dla zapytania
-    #     relevant_chunks = store.similarity_search(
-    #         query=f"query: {query}",
-    #         k=k,
-    #         filter={"user_id": user_id}
-    #     )
-        
-    #     return [NoteVS(
-    #         id=int(chunk.metadata["parent_note_id"]),
-    #         chunk_id=int(chunk.metadata["chunk_id"]),
-    #         user_id=int(chunk.metadata["user_id"]),
-    #         content=chunk.page_content,
-    #         embedding=None
-    #     ) for chunk in relevant_chunks]
-
     def retrieve_chunks(self, query: str, user_id: int, k: int = 10, threshold: float = 0.7) -> List[Tuple[NoteVS, float]]:
         store = self._get_store(self.chunked_notes_dir, "note_chunks")
         
@@ -150,7 +132,6 @@ class VectorStore(IVectorStore):
         best_chunks_map = {}
 
         for doc, score in results:
-            print(f"Score: {score}")
             if score < threshold:
                 continue
                 
