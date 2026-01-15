@@ -4,6 +4,8 @@ import SearchResultCard from '../components/SearchResultCard';
 
 const SearchPage = () => {
   const [query, setQuery] = useState('');
+  const [k, setK] = useState(10);
+  const [threshold, setThreshold] = useState(0.4);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -17,11 +19,25 @@ const SearchPage = () => {
       return;
     }
 
+    // Validate k and threshold
+    const kValue = parseInt(k, 10);
+    const thresholdValue = parseFloat(threshold);
+
+    if (isNaN(kValue) || kValue < 1) {
+      setError('k must be a positive integer');
+      return;
+    }
+
+    if (isNaN(thresholdValue) || thresholdValue < 0 || thresholdValue > 1) {
+      setError('Threshold must be a number between 0 and 1');
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setHasSearched(true);
 
-    const result = await searchNotes(query.trim());
+    const result = await searchNotes(query.trim(), kValue, thresholdValue);
     
     setLoading(false);
 
@@ -47,8 +63,10 @@ const SearchPage = () => {
       </div>
 
       <form onSubmit={handleSearch} className="search-form">
-        <div className="form-group">
+        <div className="form-group search-query-group">
+          <label htmlFor="query">Search Query</label>
           <input
+            id="query"
             type="text"
             className="form-input"
             placeholder="Enter your search query..."
@@ -56,6 +74,35 @@ const SearchPage = () => {
             onChange={(e) => setQuery(e.target.value)}
             disabled={loading}
           />
+        </div>
+        <div className="search-params">
+          <div className="form-group search-param-group">
+            <label htmlFor="k">Max Results (k)</label>
+            <input
+              id="k"
+              type="number"
+              className="form-input"
+              min="1"
+              max="100"
+              value={k}
+              onChange={(e) => setK(e.target.value)}
+              disabled={loading}
+            />
+          </div>
+          <div className="form-group search-param-group">
+            <label htmlFor="threshold">Threshold</label>
+            <input
+              id="threshold"
+              type="number"
+              className="form-input"
+              min="0"
+              max="1"
+              step="0.1"
+              value={threshold}
+              onChange={(e) => setThreshold(e.target.value)}
+              disabled={loading}
+            />
+          </div>
         </div>
         <button
           type="submit"

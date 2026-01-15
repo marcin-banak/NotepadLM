@@ -5,7 +5,7 @@
 groups = ["default"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:8890825c68ac8b4cecd5a0d4db83abe0dacc35c232575dfece5bdc0d47b4bf06"
+content_hash = "sha256:7c11f47fbab1c9cacb5728cabfc8c92a40145565c2c4a4c9bc3c7904923e49fc"
 
 [[metadata.targets]]
 requires_python = ">=3.12,<=3.14"
@@ -4170,6 +4170,15 @@ groups = ["default"]
 files = [
     {file = "six-1.17.0-py2.py3-none-any.whl", hash = "sha256:4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274"},
     {file = "six-1.17.0.tar.gz", hash = "sha256:ff70335d468e7eb6ec65b95b99d3a2836546063f63acc5171de367e834932a81"},
+]
+
+[[package]]
+name = "sklearn"
+version = "0.0.post12"
+summary = ""
+groups = ["default"]
+files = [
+    {file = "sklearn-0.0.post12.tar.gz", hash = "sha256:54cff9e20839b7b202321178228af4d9388bedf78425d9299fd9ee170d68802e"},
 ]
 
 [[package]]

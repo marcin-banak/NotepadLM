@@ -44,25 +44,43 @@ from app.infrastructure.vectorstore.vectorstore import VectorStore
 vector_store = VectorStore(embeddings, f"{data_storage_path}/vector_storage")
 
 from app.infrastructure.clusterization.clusterizer import Clusterizer
-from app.infrastructure.clusterization.clusterizer_config import UMAPConfig, HDBSCANConfig, BERTopicConfig, ClusterizerConfig
-
-clusterizer_config = ClusterizerConfig(
-    umap_config=UMAPConfig(
-        n_neighbors=10,
-        n_components=5,
-        min_dist=0.0,
-        metric='cosine'
-    ),
-    hdbscan_config=HDBSCANConfig(
-        min_cluster_size=8,
-        metric='euclidean',
-        prediction_data=True
-    ),
-    bertopic_config=BERTopicConfig(
-        min_topic_size=8,
-        representation_model=llm,
-        calculate_probabilities=False,
-        verbose=True
-    )
+from app.infrastructure.clusterization.clusterizer_config import (
+    UMAPConfig, HDBSCANConfig, BERTopicConfig, VectorizerConfig, ClusterizerConfig
 )
+
+def llm_callable(prompt: str) -> str:
+    response = llm.invoke(prompt)
+    return response.content.strip() if response and getattr(response, "content", None) else "Unnamed Topic"
+
+umap_config = UMAPConfig(
+    n_neighbors=10,
+    n_components=5,
+    min_dist=0.0,
+    metric='cosine'
+)
+hdbscan_config = HDBSCANConfig(
+    min_cluster_size=8,
+    metric='euclidean',
+    prediction_data=True
+)
+vectorizer_config = VectorizerConfig(
+    stop_words='english',
+    ngram_range=(1, 2),
+    min_df=2,
+    max_df=0.90
+)
+bertopic_config = BERTopicConfig(
+    min_topic_size=8,
+    top_n_words=40,
+    representation_model=llm_callable,
+    calculate_probabilities=False,
+    verbose=True
+)
+clusterizer_config = ClusterizerConfig(
+    umap_config=umap_config,
+    hdbscan_config=hdbscan_config,
+    vectorizer_config=vectorizer_config,
+    bertopic_config=bertopic_config
+)
+
 clusterizer = Clusterizer(embeddings, clusterizer_config)

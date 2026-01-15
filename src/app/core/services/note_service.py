@@ -117,7 +117,7 @@ class NoteService:
             clustered_notes = self.clusterizer.cluster_notes(note_clusters)
             
             # Get topic info from clusterizer
-            topic_info = self.clusterizer.get_topic_info()
+            topic_info = self.clusterizer.get_pretty_topic_labels()
             
             # Create a mapping of cluster_id to topic name
             # topic_info is a pandas DataFrame with columns: Topic, Count, Name, etc.
