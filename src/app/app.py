@@ -4,7 +4,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import auth, notes, groups, query, search
+from app.api.routes import auth, notes, groups, query, search, ask
 
 
 app = FastAPI(
@@ -28,6 +28,7 @@ app.include_router(notes.router)
 app.include_router(groups.router)
 app.include_router(query.router)
 app.include_router(search.router)
+app.include_router(ask.router)
 
 
 @app.get("/")

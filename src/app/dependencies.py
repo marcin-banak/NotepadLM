@@ -3,12 +3,13 @@
 from typing import Annotated
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from app.infrastructure.bootstrap import database_repository, vector_store, clusterizer
+from app.infrastructure.bootstrap import database_repository, vector_store, clusterizer, llm
 from app.core.domain.database import INoteRepository
 from app.core.domain.vectorstore import IVectorStore
 from app.core.domain.clusterization import IClusterizer
 from app.core.services.user_service import UserService
 from app.core.services.note_service import NoteService
+from app.core.services.answer_service import AnswerService
 from app.core.services.auth_service import decode_access_token
 from app.core.domain.database import UserDB
 
@@ -43,6 +44,14 @@ def get_note_service(
 ) -> NoteService:
     """Get note service instance."""
     return NoteService(repository, vector_store, clusterizer)
+
+
+def get_answer_service(
+    repository: Annotated[INoteRepository, Depends(get_repository)],
+    vector_store: Annotated[IVectorStore, Depends(get_vector_store)]
+) -> AnswerService:
+    """Get answer service instance."""
+    return AnswerService(repository, vector_store, llm)
 
 async def get_current_user(
     credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)],

@@ -1,17 +1,28 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import NoteForm from '../components/NoteForm';
 
 const NoteDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const isNew = id === 'new';
 
   const handleSave = () => {
-    navigate('/notes');
+    const returnTo = location.state?.returnTo;
+    if (returnTo) {
+      navigate(returnTo);
+    } else {
+      navigate('/notes');
+    }
   };
 
   const handleCancel = () => {
-    navigate('/notes');
+    const returnTo = location.state?.returnTo;
+    if (returnTo) {
+      navigate(returnTo);
+    } else {
+      navigate('/notes');
+    }
   };
 
   return (

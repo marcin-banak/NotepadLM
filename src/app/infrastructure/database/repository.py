@@ -2,9 +2,9 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker, Session
 from typing import List, Optional, Type, Any, Callable
 
-from app.core.domain.database import UserDB, NoteDB, GroupDB
+from app.core.domain.database import UserDB, NoteDB, GroupDB, AnswerDB
 from app.core.domain.database import INoteRepository
-from app.infrastructure.database.models import User, Group, Note
+from app.infrastructure.database.models import User, Group, Note, Answer
 
 class AppRepository(INoteRepository):
     def __init__(self, session_factory: Callable[[], Session]):
@@ -190,3 +190,52 @@ class AppRepository(INoteRepository):
                     session.delete(entity)
                     return True
                 return False
+
+    # --- ANSWER OPERATIONS ---
+    def create_answer(self, answer_db: AnswerDB) -> int:
+        with self._get_session() as session:
+            with session.begin():
+                answer = Answer(
+                    user_id=answer_db.user_id,
+                    question=answer_db.question,
+                    answer_text=answer_db.answer_text,
+                    title=answer_db.title,
+                    references=answer_db.references
+                )
+                session.add(answer)
+                session.flush()
+                return answer.id
+
+    def get_answer(self, answer_id: int, user_id: int) -> Optional[AnswerDB]:
+        with self._get_session() as session:
+            answer = session.get(Answer, answer_id)
+            if answer and answer.user_id == user_id:
+                return AnswerDB(
+                    id=answer.id,
+                    user_id=answer.user_id,
+                    question=answer.question,
+                    answer_text=answer.answer_text,
+                    title=answer.title,
+                    references=answer.references,
+                    created_at=answer.created_at,
+                    updated_at=answer.updated_at
+                )
+            return None
+
+    def get_answers_by_user(self, user_id: int) -> List[AnswerDB]:
+        with self._get_session() as session:
+            stmt = select(Answer).where(Answer.user_id == user_id).order_by(Answer.created_at.desc())
+            answers = session.scalars(stmt).all()
+            return [
+                AnswerDB(
+                    id=a.id,
+                    user_id=a.user_id,
+                    question=a.question,
+                    answer_text=a.answer_text,
+                    title=a.title,
+                    references=a.references,
+                    created_at=a.created_at,
+                    updated_at=a.updated_at
+                )
+                for a in answers
+            ]

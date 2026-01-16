@@ -9,6 +9,8 @@ import NoteDetailPage from './pages/NoteDetailPage';
 import GroupsPage from './pages/GroupsPage';
 import GroupDetailPage from './pages/GroupDetailPage';
 import SearchPage from './pages/SearchPage';
+import AskPage from './pages/AskPage';
+import AnswerDetailPage from './pages/AnswerDetailPage';
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
@@ -69,6 +71,26 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <Layout>
               <SearchPage />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/ask"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <AskPage />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/answer/:id"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <AnswerDetailPage />
             </Layout>
           </ProtectedRoute>
         }

@@ -18,7 +18,7 @@ from sqlalchemy.orm import sessionmaker
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-from app.infrastructure.database.models import Base
+from app.infrastructure.database.models import Base, Answer
 from app.infrastructure.database.repository import AppRepository
 
 data_storage_path = "./data_storage"

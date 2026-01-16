@@ -26,6 +26,9 @@ const Navbar = () => {
               <Link to="/search" className="navbar-link">
                 Search
               </Link>
+              <Link to="/ask" className="navbar-link">
+                Ask
+              </Link>
               {user && <span className="navbar-user">Hello, {user.name}</span>}
               <button onClick={handleLogout} className="btn btn-secondary">
                 Logout
