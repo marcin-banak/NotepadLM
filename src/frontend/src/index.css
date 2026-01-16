@@ -633,8 +633,9 @@ body {
 
 .ask-page-container {
   display: flex;
-  gap: var(--spacing-xl);
+  gap: var(--spacing-2xl);
   min-height: calc(100vh - 200px);
+  position: relative;
 }
 
 .ask-page-sidebar {
@@ -643,6 +644,11 @@ body {
   background-color: var(--background);
   border-right: 1px solid var(--border-color);
   padding: var(--spacing-lg);
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  max-height: 100vh;
+  overflow-y: auto;
 }
 
 .ask-page-sidebar h2 {
@@ -666,6 +672,15 @@ body {
 .ask-page-main {
   flex: 1;
   padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+}
+
+.ask-page-main-content {
+  width: 100%;
+  max-width: 1000px;
 }
 
 .ask-page-header {
@@ -815,8 +830,9 @@ body {
   transform: translateX(-50%);
   margin-bottom: var(--spacing-sm);
   z-index: 1000;
-  min-width: 300px;
-  max-width: 500px;
+  min-width: 400px;
+  max-width: 700px;
+  width: max-content;
 }
 
 .citation-tooltip-content {
@@ -842,27 +858,9 @@ body {
   color: var(--text-primary);
   font-size: 0.875rem;
   line-height: 1.6;
-  margin-bottom: var(--spacing-sm);
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-.citation-tooltip-link {
-  display: block;
-  width: 100%;
-  padding: var(--spacing-sm) var(--spacing-md);
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  font-size: 0.875rem;
-  text-align: center;
-  transition: background-color 0.2s;
-}
-
-.citation-tooltip-link:hover {
-  background-color: var(--primary-hover);
+  margin: 0;
+  white-space: normal;
+  word-wrap: break-word;
 }
 
 /* Answer Detail Page */

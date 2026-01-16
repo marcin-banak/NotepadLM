@@ -156,87 +156,89 @@ const AskPage = () => {
 
         {/* Main content area */}
         <div className="ask-page-main">
-          <div className="ask-page-header">
-            <h1>Ask a Question</h1>
-            <p className="ask-page-subtitle">
-              Ask questions about your notes and get AI-powered answers with citations
-            </p>
-          </div>
-
-          {/* Query form - only show if no current answer */}
-          {!currentAnswer && (
-            <form onSubmit={handleSubmit} className="ask-form">
-              <div className="form-group">
-                <label htmlFor="query">Your Question</label>
-                <textarea
-                  id="query"
-                  className="form-input form-textarea"
-                  placeholder="Enter your question here..."
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  disabled={loading}
-                  rows={4}
-                />
-              </div>
-              <button
-                type="submit"
-                className="btn btn-primary"
-                disabled={loading || !query.trim()}
-              >
-                {loading ? 'Generating Answer...' : 'Ask Question'}
-              </button>
-            </form>
-          )}
-
-          {error && (
-            <div className="error-message">
-              {error}
+          <div className="ask-page-main-content">
+            <div className="ask-page-header">
+              <h1>Ask a Question</h1>
+              <p className="ask-page-subtitle">
+                Ask questions about your notes and get AI-powered answers with citations
+              </p>
             </div>
-          )}
 
-          {loading && (
-            <div className="loading">
-              Generating answer...
-            </div>
-          )}
-
-          {/* Display current answer */}
-          {currentAnswer && (
-            <div className="answer-display">
-              <div className="answer-header">
-                <h2>{currentAnswer.title}</h2>
+            {/* Query form - only show if no current answer */}
+            {!currentAnswer && (
+              <form onSubmit={handleSubmit} className="ask-form">
+                <div className="form-group">
+                  <label htmlFor="query">Your Question</label>
+                  <textarea
+                    id="query"
+                    className="form-input form-textarea"
+                    placeholder="Enter your question here..."
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    disabled={loading}
+                    rows={4}
+                  />
+                </div>
                 <button
-                  className="btn btn-secondary"
-                  onClick={() => {
-                    setCurrentAnswer(null);
-                    setQuery('');
-                  }}
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={loading || !query.trim()}
                 >
-                  Ask New Question
+                  {loading ? 'Generating Answer...' : 'Ask Question'}
                 </button>
+              </form>
+            )}
+
+            {error && (
+              <div className="error-message">
+                {error}
               </div>
-              <div className="answer-meta">
-                <p className="answer-question"><strong>Question:</strong> {currentAnswer.question}</p>
+            )}
+
+            {loading && (
+              <div className="loading">
+                Generating answer...
               </div>
-              <div className="answer-content">
-                {answerParts.map((part, index) => {
-                  if (part.type === 'citation') {
-                    return (
-                      <CitationTooltip
-                        key={index}
-                        citationNumber={part.citationNumber}
-                        chunkText={part.chunkText}
-                        noteId={part.noteId}
-                        onNavigate={handleCitationClick}
-                      />
-                    );
-                  } else {
-                    return <span key={index}>{part.content}</span>;
-                  }
-                })}
+            )}
+
+            {/* Display current answer */}
+            {currentAnswer && (
+              <div className="answer-display">
+                <div className="answer-header">
+                  <h2>{currentAnswer.title}</h2>
+                  <button
+                    className="btn btn-secondary"
+                    onClick={() => {
+                      setCurrentAnswer(null);
+                      setQuery('');
+                    }}
+                  >
+                    Ask New Question
+                  </button>
+                </div>
+                <div className="answer-meta">
+                  <p className="answer-question"><strong>Question:</strong> {currentAnswer.question}</p>
+                </div>
+                <div className="answer-content">
+                  {answerParts.map((part, index) => {
+                    if (part.type === 'citation') {
+                      return (
+                        <CitationTooltip
+                          key={index}
+                          citationNumber={part.citationNumber}
+                          chunkText={part.chunkText}
+                          noteId={part.noteId}
+                          onNavigate={handleCitationClick}
+                        />
+                      );
+                    } else {
+                      return <span key={index}>{part.content}</span>;
+                    }
+                  })}
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>

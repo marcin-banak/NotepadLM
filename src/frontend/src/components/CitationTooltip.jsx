@@ -22,17 +22,13 @@ const CitationTooltip = ({ citationNumber, chunkText, noteId, onNavigate }) => {
         [{citationNumber}]
       </span>
       {showTooltip && (
-        <div className="citation-tooltip">
+        <div 
+          className="citation-tooltip"
+          onMouseEnter={() => setShowTooltip(true)}
+          onMouseLeave={() => setShowTooltip(false)}
+        >
           <div className="citation-tooltip-content">
             <p className="citation-tooltip-text">{chunkText}</p>
-            {noteId && (
-              <button
-                className="citation-tooltip-link"
-                onClick={handleClick}
-              >
-                View source note →
-              </button>
-            )}
           </div>
         </div>
       )}
