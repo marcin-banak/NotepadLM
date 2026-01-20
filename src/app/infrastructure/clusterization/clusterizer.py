@@ -2,6 +2,7 @@ from typing import List
 from umap import UMAP
 from hdbscan import HDBSCAN
 from bertopic import BERTopic
+import numpy as np
 from bertopic.representation import KeyBERTInspired
 from sklearn.feature_extraction.text import CountVectorizer
 
@@ -24,7 +25,9 @@ class Clusterizer(IClusterizer):
         hdbscan_model = HDBSCAN(
             min_cluster_size=clusterizer_config.hdbscan_config.min_cluster_size,
             metric=clusterizer_config.hdbscan_config.metric, 
-            prediction_data=clusterizer_config.hdbscan_config.prediction_data
+            prediction_data=clusterizer_config.hdbscan_config.prediction_data,
+            approx_min_span_tree=False,
+            core_dist_n_jobs=1
         )
 
         vectorizer_model = CountVectorizer(
@@ -58,6 +61,10 @@ class Clusterizer(IClusterizer):
     def cluster_notes(self, notes: List[NoteCluster]) -> List[NoteCluster]:
         if not notes:
             return []
+
+        # rng = np.random.RandomState(42)
+        # indices = rng.permutation(len(notes))
+        # notes = [notes[i] for i in indices]
 
         texts = [note.content for note in notes]
 

@@ -116,7 +116,7 @@ class AppRepository(INoteRepository):
 
     def get_notes_by_user(self, user_id: int) -> List[NoteDB]:
         with self._get_session() as session:
-            stmt = select(Note).where(Note.user_id == user_id)
+            stmt = select(Note).where(Note.user_id == user_id).order_by(Note.id)
             notes = session.scalars(stmt).all()
             return [
                 NoteDB(
