@@ -359,6 +359,66 @@ body {
   box-shadow: var(--shadow-md);
 }
 
+/* Note View */
+.note-view {
+  width: 100%;
+}
+
+.note-view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-lg);
+  gap: var(--spacing-lg);
+}
+
+.note-view-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  flex: 1;
+  line-height: 1.2;
+}
+
+.note-view-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-shrink: 0;
+}
+
+.note-view-meta {
+  display: flex;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.note-view-date {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.note-view-content {
+  background-color: var(--background);
+  padding: var(--spacing-xl);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+  line-height: 1.8;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+}
+
+.note-view-content p {
+  margin-bottom: var(--spacing-md);
+}
+
+.note-view-content p:last-child {
+  margin-bottom: 0;
+}
+
 /* Search Page */
 .search-page {
   width: 100%;
@@ -594,6 +654,30 @@ body {
 
   .form-actions {
     flex-direction: column;
+  }
+
+  .note-view-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-md);
+  }
+
+  .note-view-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .note-view-actions .btn {
+    flex: 1;
+  }
+
+  .note-view-meta {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .note-view-title {
+    font-size: 1.5rem;
   }
 
   .search-form {

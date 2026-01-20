@@ -27,10 +27,10 @@ const NoteCard = ({ note, onDelete }) => {
         <h3 className="note-card-title">{note.title}</h3>
         <div className="note-card-actions">
           <button
-            className="btn btn-small btn-secondary"
+            className="btn btn-small btn-primary"
             onClick={(e) => {
               e.stopPropagation();
-              navigate(`/notes/${note.id}`);
+              navigate(`/notes/${note.id}/edit`);
             }}
           >
             Edit

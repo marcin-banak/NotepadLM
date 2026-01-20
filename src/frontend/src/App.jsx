@@ -36,6 +36,26 @@ const AppRoutes = () => {
         }
       />
       <Route
+        path="/notes/new"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <NoteDetailPage />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/notes/:id/edit"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <NoteDetailPage />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/notes/:id"
         element={
           <ProtectedRoute>
