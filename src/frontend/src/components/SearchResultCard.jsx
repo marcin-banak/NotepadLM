@@ -64,14 +64,10 @@ const SearchResultCard = ({ result }) => {
       {showPreview ? (
         <div className="search-result-preview">
           <div className="search-result-chunk">
-            <strong>Relevant chunk:</strong>
+            <strong>Relevant note:</strong>
             <div className="chunk-text">
               {highlightChunk(note.content, chunk_start, chunk_end)}
             </div>
-          </div>
-          <div className="search-result-full-content">
-            <strong>Full content:</strong>
-            <div className="full-content-text">{note.content}</div>
           </div>
         </div>
       ) : (

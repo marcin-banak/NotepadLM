@@ -30,6 +30,11 @@ const NoteList = () => {
     navigate('/notes/new');
   };
 
+  const handleNoteDelete = (deletedNoteId) => {
+    // Remove deleted note from local state instead of reloading all notes
+    setNotes(notes.filter(note => note.id !== deletedNoteId));
+  };
+
   if (loading) {
     return <div className="loading">Loading notes...</div>;
   }
@@ -53,7 +58,7 @@ const NoteList = () => {
       ) : (
         <div className="note-grid">
           {notes.map((note) => (
-            <NoteCard key={note.id} note={note} onDelete={fetchNotes} />
+            <NoteCard key={note.id} note={note} onDelete={handleNoteDelete} />
           ))}
         </div>
       )}

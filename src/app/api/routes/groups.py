@@ -6,7 +6,8 @@ from app.api.schemas.group import GroupResponse, GroupUpdate
 from app.api.schemas.note import NoteResponse
 from app.core.domain.database import UserDB
 from app.core.domain.database import INoteRepository
-from app.dependencies import get_repository, get_current_user
+from app.core.services.note_service import NoteService
+from app.dependencies import get_repository, get_current_user, get_note_service
 
 router = APIRouter(prefix="/groups", tags=["groups"])
 
@@ -135,4 +136,19 @@ async def delete_group(
             detail="Failed to delete group"
         )
     return None
+
+
+@router.post("/clusterize", status_code=status.HTTP_200_OK)
+async def clusterize_notes(
+    current_user: Annotated[UserDB, Depends(get_current_user)],
+    note_service: Annotated[NoteService, Depends(get_note_service)]
+):
+    """Manually trigger clustering of notes into groups."""
+    success = note_service.recalculate_groups(current_user.id)
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to clusterize notes"
+        )
+    return {"message": "Notes have been clustered into groups successfully"}
 

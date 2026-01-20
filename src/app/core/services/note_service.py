@@ -158,6 +158,20 @@ class NoteService:
             # Don't raise - allow note operation to succeed even if clustering fails
             logging.getLogger(__name__).error(f"Failed to recalculate groups for user {user_id}: {e}", exc_info=True)
     
+    def recalculate_groups(self, user_id: int) -> bool:
+        """Public method to manually recalculate groups for a user.
+        
+        Returns:
+            True if successful, False otherwise
+        """
+        import logging
+        try:
+            self._recalculate_groups(user_id)
+            return True
+        except Exception as e:
+            logging.getLogger(__name__).error(f"Failed to recalculate groups for user {user_id}: {e}", exc_info=True)
+            return False
+    
     def create_note(self, title: str, content: str, user_id: int, group_id: Optional[int] = None) -> int:
         """Create a new note for a user."""
         note_db = NoteDB(
@@ -174,8 +188,7 @@ class NoteService:
         if note:
             # Sync to vectorstore
             self._sync_to_vectorstore(note)
-            # Recalculate groups
-            self._recalculate_groups(user_id)
+            # Note: Groups are not recalculated automatically - user must trigger manually
         
         return note_id
     
@@ -285,8 +298,7 @@ class NoteService:
                 # Delete old note from vectorstore and add updated one
                 self.vector_store.delete_note(old_note.id)
                 self._sync_to_vectorstore(updated_note)
-                # Recalculate groups
-                self._recalculate_groups(user_id)
+                # Note: Groups are not recalculated automatically - user must trigger manually
         
         return updated_id
     
@@ -344,9 +356,7 @@ class NoteService:
         _log("E", "note_service.py:delete_note", "Database delete result", {"note_id": note_id, "success": success})
         # #endregion
         
-        if success:
-            # Recalculate groups
-            self._recalculate_groups(user_id)
+        # Note: Groups are not recalculated automatically - user must trigger manually
         
         return success
     

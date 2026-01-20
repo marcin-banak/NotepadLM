@@ -60,3 +60,15 @@ export const deleteGroup = async (id) => {
   }
 };
 
+export const clusterizeNotes = async () => {
+  try {
+    const response = await apiClient.post('/groups/clusterize');
+    return { success: true, data: response.data };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.detail || 'Failed to clusterize notes',
+    };
+  }
+};
+
