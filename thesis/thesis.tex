@@ -1,0 +1,341 @@
+\documentclass[polish,inz,longabstract]{iithesis}
+
+\usepackage[utf8]{inputenc}
+\usepackage{lipsum}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{tabularx}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{url}
+
+\polishtitle{
+    System notatek wykorzystujący modele językowe do semantycznego grupowania, wyszukiwania i analizy treści
+}
+\englishtitle{
+    Note-taking system using language models for semantic grouping, searching and analyzing content
+}
+
+\author{Marcin Banak}
+\advisor{dr Paweł Rychlikowski}
+\transcriptnum {337608}
+\advisorgen{dr Paweł Rychlikowski}
+
+\polishabstract{
+    Celem pracy jest stworzenie systemu notatek usprawniającego proces grupowania notatek oraz odzyskiwania informacji na ich podstawie przy użyciu technik uczenia maszynowego i przetwarzania języka naturalnego. 
+}
+\englishabstract{
+    Lorem ipsum
+}
+
+\begin{document}
+% ===============================
+% Wstęp
+% ===============================
+\chapter{Wstęp}
+\section{Wprowadzenie do tematyki}
+Współczesny świat informacji charakteryzuje się ogromną ilością danych tekstowych, które użytkownicy gromadzą w formie notatek, dokumentów i zapisków. Tradycyjne systemy zarządzania notatkami, opierają się głównie na ręcznej organizacji treści poprzez tworzenie folderów, przypisywanie tagów lub ręczne kategoryzowanie. Takie podejście, choć sprawdzone, ma istotne ograniczenia: wymaga ciągłego zaangażowania użytkownika w organizację treści, a wyszukiwanie opiera się głównie na dopasowaniu słów kluczowych, co może być niewystarczające dla złożonych zapytań koncepcyjnych.
+
+Rozwój technologii przetwarzania języka naturalnego (NLP) i uczenia maszynowego (ML) otworzył nowe możliwości w zakresie automatycznej organizacji i wyszukiwania informacji tekstowych. W szczególności, embeddingi tekstowe pozwalają na reprezentację semantyczną dokumentów w przestrzeni wektorowej, gdzie podobieństwo semantyczne można mierzyć za pomocą metryk matematycznych. Techniki grupowania dokumentów, takie jak topic modeling, umożliwiają automatyczną identyfikację tematycznych grup w zbiorze notatek. Z kolei duże modele językowe (LLM) mogą być wykorzystane do generowania inteligentnych odpowiedzi na podstawie zawartości notatek, wykorzystując podejście Retrieval-Augmented Generation (RAG).
+
+\section{Motywacja wyboru tematyki}
+Wybór tego tematu podyktowany został potrzebą stworzenia systemu zarządzania notatkami, który w sposób automatyczny i inteligentny wspiera użytkownika w organizacji oraz eksploracji zgromadzonych treści, minimalizując konieczność ręcznej klasyfikacji danych. W praktyce, wraz ze wzrostem liczby notatek, tradycyjne metody organizacji przestają być efektywne, co prowadzi do utraty kontroli nad zgromadzoną wiedzą i obniżenia jej użyteczności.
+
+Dodatkowym czynnikiem motywującym był dynamiczny rozwój dużych modeli językowych oraz ich rosnąca dostępność w formie usług API, co umożliwia ich praktyczne zastosowanie w systemach użytkowych. W szczególności podejście Retrieval-Augmented Generation pozwala na łączenie klasycznych metod wyszukiwania informacji z generatywnymi możliwościami LLM, oferując użytkownikowi odpowiedzi kontekstowe, oparte na jego własnych danych. Takie rozwiązanie stanowi istotny krok w kierunku systemów zarządzania wiedzą, które nie tylko przechowują informacje, ale również aktywnie wspierają proces myślenia, planowania i podejmowania decyzji.
+
+Temat pracy został również wybrany ze względu na możliwość praktycznego połączenia wiedzy z zakresu inżynierii oprogramowania, przetwarzania języka naturalnego oraz uczenia maszynowego w jednym, spójnym projekcie. Implementacja systemu NotepadLM pozwala na analizę rzeczywistych problemów projektowych, takich jak integracja wielu komponentów ML, skalowalność systemu oraz projektowanie interfejsu umożliwiającego intuicyjną interakcję z zaawansowanymi mechanizmami analizy tekstu. Dzięki temu praca ma zarówno wymiar praktyczny, jak i badawczo-inżynierski.
+
+\section{Cel pracy}
+Celem pracy jest stworzenie systemu notatek usprawniającego proces grupowania notatek oraz odzyskiwania informacji na ich podstawie przy użyciu technik uczenia maszynowego i przetwarzania języka naturalnego. Osiągnięcie tego celu wymaga realizacji następujących komponentów:
+
+\begin{itemize}
+    \item Serwisu API, który będzie zarządzał użytkownikami, notatkami i grupami notatek oraz wyszukiwaniem informacji i generowaniem odpowiedzi na podstawie zawartości notatek.
+    \item Aplikacji webowej, która będzie udostępniała użytkownikom intuicyjny interfejs wizualny, pozwający na interakcję z serwisem API poprzez przeglądanie notatek, grupowanie ich oraz generowanie odpowiedzi na podstawie zawartości notatek.
+\end{itemize}
+
+Ostatecznym celem pracy jest stworzenie systemu notatek, który będzie umożliwiał użytkownikom efektywną organizację i eksplorację zgromadzonych notatek oraz generowanie odpowiedzi na podstawie zawartości notatek.
+
+\section{Zakres pracy}
+Zakres pracy obejmuje następujące zadania:
+\begin{itemize}
+    \item Implementację serwisu API, który będzie zarządzał danymi użytkowników oraz logiką aplikacji, w oparciu o framework FastAPI.
+    \item Implementację bazy danych, która będzie umożliwiała operacje CRUD na użytkownikach, notatkach i grupach notatek.
+    \item Implementację bazy danych, która będzie przechowywała notatki w formie wektorowej reprezentacji tekstu.
+    \item Implementację mechanizmu grupowania notatek na podstawie zawartości notatek, z wykorzystaniem techinki vectorstore.
+    \item Implementację mechanizmu wyszukiwania informacji na podstawie zawartości notatek.
+    \item Implementację mechanizmu generowania odpowiedzi na podstawie zawartości notatek, wraz z cytowaniem notatek, które zostały użyte do uzyskania odpowiedzi.
+    \item Implementację aplikacji webowej, która będzie udostępniała interfejs wizualny, pozwalający na interakcję z serwisem API.
+    \item Implementację mechanizmu autentykacji i autoryzacji użytkowników.
+    \item Testowanie funkcjonalności systemu, wraz z przeprowadzeniem analizy efektywności systemu.
+    \item Przygotowanie dokumentacji technicznej i użytkowej systemu oraz scenariuszy użytkowania systemu.
+\end{itemize}
+
+\section{Krótki opis struktury pracy}
+Praca została zaprojektowana zgodnie z klasycznym schematem pracy inżynierskiej, prowadząc czytelnika od kontekstu teoretycznego, przez architekturę, aż po instrukcję użytkowania i podsumowanie. Rozdział 2 wprowadza kluczowe koncepcje NLP i ML używane w projekcie, rozdział 3 przeprowadza analizę dostępnych narzędzi, rozdział 4 prezentuje analizę wymagań, rozdział 5 prezentuje architekturę przed implementacją, a rozdział 6 szczegółowo opisuje implementację zgodnie z warstwami architektury. Rozdział 7 weryfikuje zarówno funkcjonalność, jak i jakość rozwiązań NLP.
+
+% ===============================
+% Podstawy teoretyczne i kontekst problemu
+% ===============================
+\chapter{Podstawy teoretyczne i kontekst problemu}
+\section{Przetwarzanie języka naturalnego w organizacji informacji}
+Przetwarzanie języka naturalnego (Natural Language Processing, NLP) oferuje zestaw technik umożliwiających automatyczne przetwarzanie i organizację dokumentów tekstowych. Kluczowym elementem jest reprezentacja semantyczna dokumentów, pozwalająca na pomiar podobieństwa między tekstami na poziomie znaczenia, a nie jedynie dopasowania słów.
+
+W systemach zarządzania informacjami wykorzystuje się m.in.:
+
+\begin{itemize}
+    \item \textbf{Embeddingi tekstowe} – wektorowe reprezentacje dokumentów w przestrzeni wielowymiarowej, w której podobne semantycznie dokumenty znajdują się blisko siebie. Embeddingi pozwalają na wykorzystanie metryk matematycznych, takich jak cosine similarity, do oceny podobieństwa semantycznego.
+    \item \textbf{Topic modeling} – techniki automatycznego wykrywania tematów w zbiorach dokumentów, umożliwiające odkrywanie ukrytych zależności i powiązań między dokumentami bez ręcznego tagowania.
+    \item \textbf{Wyszukiwanie semantyczne} – odnajdywanie dokumentów na podstawie znaczenia zapytania, a nie tylko występowania słów kluczowych.
+    \item \textbf{Generowanie odpowiedzi i podsumowań} – wykorzystanie LLM do automatycznego tworzenia streszczeń i odpowiedzi w oparciu o treść dokumentów.
+\end{itemize}
+
+\section{Embeddingi i podobieństwo semantyczne}
+Embeddingi tekstowe są podstawową metodą reprezentacji semantycznej w nowoczesnym NLP. Reprezentują teksty jako wektory w przestrzeni wielowymiarowej, w której bliskość wektorów odwzorowuje podobieństwo znaczeniowe dokumentów.
+
+\subsubsection*{Teoria embeddingów}
+Modele embeddingów są trenowane na dużych zbiorach tekstów, aby uchwycić relacje semantyczne między słowami i zdaniami. Współczesne podejścia, oparte na architekturach transformerów (np. BERT, Sentence-BERT, E5), umożliwiają generowanie kontekstowych reprezentacji tekstu.
+
+\subsubsection*{Metryki podobieństwa}
+Do pomiaru podobieństwa semantycznego najczęściej stosuje się cosine similarity, która mierzy kąt między wektorami w przestrzeni. Pozwala to na ocenę podobieństwa znaczeniowego niezależnie od długości wektorów.
+
+\subsubsection*{Bazy danych wektorowych}
+Bazy danych wektorowych (vectorstore) są specjalizowanymi systemami przechowującymi embeddingi i umożliwiającymi efektywne wyszukiwanie podobnych dokumentów. Takie bazy wspierają również filtrowanie wyników według metadanych oraz przechowywanie danych na dysku w sposób trwały i wydajny.
+
+\section{Grupowanie dokumentów z wykorzystaniem uczenia maszynowego}
+Grupowanie dokumentów (clustering) to technika uczenia maszynowego pozwalająca na automatyczne identyfikowanie grup podobnych dokumentów w zbiorach danych. Dzięki temu możliwe jest organizowanie notatek i dokumentów w tematyczne kategorie bez konieczności ręcznego tagowania.
+
+\subsubsection*{Techniki topic modeling}
+Topic modeling łączy embeddingi z metodami redukcji wymiarowości i algorytmami grupowania. Typowy pipeline obejmuje:
+\begin{enumerate}
+    \item Generowanie embeddingów dokumentów
+    \item Redukcję wymiarowości w celu zachowania istotnej struktury danych
+    \item Grupowanie dokumentów w przestrzeni zredukowanej
+    \item Ekstrakcję reprezentatywnych słów kluczowych dla każdego tematu
+    \item Nazewnictwo tematów przy użyciu modeli językowych
+\end{enumerate}
+
+\subsubsection*{Redukcja wymiarowości i grupowanie}
+Redukcja wymiarowości (np. UMAP) zachowuje lokalną strukturę danych w przestrzeni wielowymiarowej, co umożliwia efektywne grupowanie dokumentów. Algorytmy grupowania oparte na gęstości (np. HDBSCAN) automatycznie wykrywają liczbę grup i identyfikują outlierów, czyli dokumenty, które nie pasują do żadnej grupy.
+
+\section{Duże modele językowe}
+Duże modele językowe (Large Language Models, LLM) stają się istotnym narzędziem w aplikacjach końcowego użytkownika, umożliwiając:
+\begin{itemize}
+    \item Generowanie odpowiedzi na pytania w oparciu o zawartość dokumentów
+    \item Tworzenie podsumowań i streszczeń
+    \item Wspieranie topic modeling poprzez nadawanie opisów tematom
+\end{itemize}
+
+\subsubsection*{Retrieval-Augmented Generation (RAG)}
+RAG to architektura łącząca wyszukiwanie dokumentów z generowaniem odpowiedzi przez LLM. Proces obejmuje:
+\begin{enumerate}
+    \item Wyszukiwanie fragmentów dokumentów istotnych dla zapytania
+    \item Konstruowanie promptu zawierającego zapytanie i kontekst dokumentów
+    \item Generowanie odpowiedzi przez LLM
+\end{enumerate}
+
+\subsubsection*{Prompt engineering}
+Prompt engineering pozwala na kontrolowanie jakości i formy odpowiedzi generowanych przez LLM. Poprawnie skonstruowane prompt’y umożliwiają uzyskanie spójnych, strukturyzowanych odpowiedzi, a także cytowanie źródeł i zachowanie wymaganego formatu odpowiedzi.
+
+% ===============================
+% Analiza rynku i przegląd rozwiązań
+% ===============================
+
+\chapter{Analiza rynku i przegląd rozwiązań}
+\section{Istniejące systemy zarządzania notatkami}
+Systemy zarządzania notatkami są jednym z podstawowych narzędzi wspierających organizację informacji osobistej. Tradycyjne rozwiązania, takie jak Evernote, Notion czy Obsidian, oferują użytkownikom możliwość tworzenia, przechowywania i organizacji notatek, jednak opierają się głównie na ręcznych metodach organizacji treści.
+
+\subsection{Rozbudowane platformy produktywności}
+Pierwszą grupę stanowią kompleksowe systemy zarządzania informacją i pracą, takie jak Notion czy Microsoft OneNote. Narzędzia te oferują szeroki zakres funkcjonalności, obejmujący edycję notatek, struktury hierarchiczne, bazy danych, współdzielenie treści oraz integrację z innymi usługami ekosystemowymi.
+
+Ich główną wadą jest jednak silne uzależnienie organizacji treści od manualnych struktur tworzonych przez użytkownika (foldery, strony, relacje). Pomimo wprowadzania funkcji opartych na AI, mechanizmy te pełnią zazwyczaj rolę pomocniczą (np. generowanie streszczeń), a nie stanowią podstawowego sposobu eksploracji wiedzy. Wyszukiwanie informacji nadal opiera się głównie na dopasowaniu słów kluczowych lub prostych filtrach strukturalnych, co ogranicza efektywność pracy z dużym, niestrukturalnym zbiorem notatek.
+
+\subsection{Narzędzia typu Personal Knowledge Management (PKM)}
+Drugą grupę stanowią narzędzia ukierunkowane na budowę osobistej bazy wiedzy, takie jak Obsidian czy Joplin. Rozwiązania te opierają się na lokalnych plikach (najczęściej w formacie Markdown) oraz ręcznie tworzonych połączeniach między notatkami, umożliwiając eksplorację wiedzy w postaci grafu.
+
+Ich zaletą jest duża elastyczność i kontrola nad danymi, jednak wymagają one od użytkownika znacznego zaangażowania poznawczego w proces organizacji treści. Powiązania semantyczne są definiowane ręcznie, a automatyczne grupowanie czy wyszukiwanie kontekstowe nie stanowią elementu rdzeniowego systemu. Integracja z modelami językowymi i zaawansowanymi technikami NLP jest możliwa jedynie poprzez wtyczki, często o ograniczonej stabilności i spójności.
+
+\subsection{Klasyczne systemy notatkowe}
+Trzecią kategorię tworzą klasyczne narzędzia do notatek, takie jak Evernote czy Google Keep. Systemy te koncentrują się na szybkim zapisie informacji, synchronizacji między urządzeniami oraz prostych mechanizmach organizacyjnych (tagi, notatniki).
+
+Pomimo swojej dojrzałości rynkowej, narzędzia te wykazują ograniczone możliwości w zakresie automatycznej analizy treści. Organizacja wiedzy pozostaje w dużej mierze manualna, a semantyczne relacje pomiędzy notatkami nie są eksplorowane w sposób systemowy. Funkcje AI, jeśli występują, są często dostępne jedynie w płatnych planach i nie oferują pełnej transparentności źródeł informacji ani kontroli nad procesem wnioskowania.
+
+\section{Analiza dostępnych rozwiązań}
+\begin{table}[h]
+    \centering
+    \footnotesize
+    \begin{tabularx}{\textwidth}{|l|l|l|l|l|}
+        \hline
+        \textbf{Narzędzie} &
+        \textbf{Model danych} &
+        \textbf{Wyszukiwanie} &
+        \textbf{Grupowanie} &
+        \textbf{RAG} \\
+        \hline
+        Notion & Strukturalny & Semantyczne płatne & Ręczne & Ograniczone \\
+        \hline
+        Evernote & Płaski & Semantyczne płatne & Ręczne & Brak \\
+        \hline
+        OneNote & Hierarchiczny & Tekstowe & Ręczne & Brak \\
+        \hline
+        Obsidian & Pliki lokalne & Tekstowe & Ręczne & Brak \\
+        \hline
+        Joplin & Pliki lokalne & Tekstowe & Ręczne & Brak \\
+        \hline
+        \textbf{NotepadLM} & \textbf{Semantyczny} & \textbf{Semantyczne} & \textbf{Automatyczne} & \textbf{Tak} \\
+        \hline
+    \end{tabularx}
+    \caption{Porównanie wybranych narzędzi do zarządzania notatkami}
+    \label{tab:notatniki-porownanie}
+\end{table}
+
+Przeprowadzona analiza ujawnia niewykorzystany potencjał w tradycyjnych systemach notatek, które nie korzystają w pełni z możliwości oferowanych przez współczesne techniki NLP i duże modele językowe. Brakuje rozwiązań, które:
+
+\begin{itemize}
+    \item automatycznie organizowałyby notatki w oparciu o ich znaczenie, bez konieczności ręcznego tagowania,
+    \item traktowałyby zbiór notatek jako spójną bazę wiedzy, a nie zbiór niezależnych dokumentów,
+    \item umożliwiałyby zadawanie pytań w języku naturalnym i uzyskiwanie odpowiedzi opartych wyłącznie na danych użytkownika,
+    \item zapewniałyby przejrzystość procesu wnioskowania poprzez jawne cytowanie źródeł.
+\end{itemize}
+
+Projektowany system NotepadLM ma na celu wykorzystanie tego potencjału, łącząc dostępność aplikacji webowej z inżynierską precyzją analizy semantycznej, automatycznym grupowaniem treści oraz mechanizmami Retrieval-Augmented Generation. W efekcie system nie tylko przechowuje informacje, lecz aktywnie wspiera użytkownika w eksploracji i wykorzystaniu zgromadzonej wiedzy.
+
+\chapter{Definiowanie wymagań}
+\section{Wymagania funkcjonalne}
+\subsection{Zarządzanie użytkownikami i autoryzacja}
+\begin{enumerate}[label=\textbf{WF-\arabic*}, leftmargin=*, align=left, font=\bfseries, labelsep=1em]
+    \item\label{WF-użytkownik1}System umożliwia rejestrację nowych użytkowników.
+    \item\label{WF-użytkownik2}Podczas rejestracji użytkownik musi podać unikalną nazwę użytkownika i hasło.
+    \item\label{WF-użytkownik3}Hasła użytkowników są haszowane przed zapisaniem w bazie danych.
+    \item\label{WF-użytkownik4}System umożliwia logowanie użytkowników.
+    \item\label{WF-użytkownik5}Po pomyślnym logowaniu system generuje token JWT.
+    \item\label{WF-użytkownik6}Wszystkie chronione endpointy wymagają podania tokenu JWT.
+    \item\label{WF-użytkownik7}Wszystkie dane użytkownika w bazie są izolowane, co zapewnia, że użytkownik ma dostęp tylko do swoich danych.
+\end{enumerate}
+
+\subsection{Zarządzanie notatkami}
+\begin{enumerate}[label=\textbf{WF-\arabic*}, leftmargin=*, align=left, font=\bfseries, labelsep=1em, resume]
+    \item\label{WF-notatka1}Użytkownik może zdefiniować tytuł i treść notatki.
+    \item\label{WF-notatka2}System umożliwia operacje CRUD na notatkach.
+    \item\label{WF-notatka3}Po operacji CRUD następuje automatyczna synchronizacja notatki z vectorstore.
+    \item\label{WF-notatka4}Użytkownik ma dostęp do widoku wszystkich notatek i pojedynczej notatki.
+    \item\label{WF-notatka5}Użytkownik ma dostęp wyłącznie do własnych notatek.
+\end{enumerate}
+
+\subsection{Automatyczne grupowanie semantyczne notatek}
+\begin{enumerate}[label=\textbf{WF-\arabic*}, leftmargin=*, align=left, font=\bfseries, labelsep=1em, resume]
+    \item\label{WF-grupowanie1}Grupa posiada deskryptywną nazwę i przypisanie do niej notatki.
+    \item\label{WF-grupowanie2}System usuwa wszystkie istniejące grupy użytkownika przed tworzeniem nowych.
+    \item\label{WF-grupowanie3}System automatycznie grupuje notatki użytkownika po każdej operacji CRUD.
+    \item\label{WF-grupowanie4}Grupowanie odbywa się na podstawie embeddingów notatek.
+    \item\label{WF-grupowanie5}Po utworzeniu grup następuje ekstrakcja informacji o tematach, a grupy są nazywane automatycznie przez LLM.
+    \item\label{WF-grupowanie6}Outliery (notatki niepasujące do żadnej grupy) nie są przypisywane do grup w bazie.
+    \item\label{WF-grupowanie7}Użytkownik ma dostęp do widoku wszystkich grup i pojedynczej grupy.
+\end{enumerate}
+
+\subsection{Wyszukiwanie semantyczne}
+\begin{enumerate}[label=\textbf{WF-\arabic*}, leftmargin=*, align=left, font=\bfseries, labelsep=1em, resume]
+    \item\label{WF-wyszukiwanie1}Notatki są dzielone na chunki pozwalające na bardziej precyzyjne wyszukiwanie.
+    \item\label{WF-wyszukiwanie2}System umożliwia wyszukiwanie semantyczne notatek na podstawie zapytania.
+    \item\label{WF-wyszukiwanie3}Parametry zapytania obejmują query (tekst), k (maksymalna liczba chunków) i threshold (minimalny próg podobieństwa).
+    \item\label{WF-wyszukiwanie4}Najbardziej adekwatne notatki są odzyskiwane z vectorstore.
+    \item\label{WF-wyszukiwanie5}Notatki są filtrowane po progu podobieństwa threshold.
+    \item\label{WF-wyszukiwanie6}Dla kilku dopasowań, system wybiera najlepiej dopasowany chunk dla danej notatki.
+    \item\label{WF-wyszukiwanie7}Wyniki wyszukiwania zawierają współczynnik podobieństwa i są sortowane malejąco według trafności.
+    \item\label{WF-wyszukiwanie8}Użytkownik ma dostęp do widoku wyników wyszukiwania z podświetleniem najbardziej adekwatnego chunku notatki.
+\end{enumerate}
+
+\subsection{Generowanie odpowiedzi opartych na notatkach}
+\begin{enumerate}[label=\textbf{WF-\arabic*}, leftmargin=*, align=left, font=\bfseries, labelsep=1em, resume]
+    \item\label{WF-odpowiedzi1}System umożliwia zadanie pytania w języku naturalnym.
+    \item\label{WF-odpowiedzi3}System realizuje pipeline RAG, wyszukując odpowiednie chunki z notatek dla zadanego pytania.
+    \item\label{WF-odpowiedzi4}W przypadku braku adekwatnych chunków, system zwraca odpowiedź informującą o braku danych.
+    \item\label{WF-odpowiedzi6}Prompt do modelu jest tworzony z wstawionym kontekstem i pytaniem.
+    \item\label{WF-odpowiedzi7}LLM generuje odpowiedź w strukturze zgodnej z AnswerSchema, zawierającą tytuł i odpowiedź.
+    \item\label{WF-odpowiedzi8}System automatycznie ekstrahuje cytaty z odpowiedzi i renumeruje je w kolejności pojawienia się w tekście.
+    \item\label{WF-odpowiedzi10}Odpowiedzi są zapisywane w bazie danych, a użytkownik może pobierać pojedyncze odpowiedzi lub listę wszystkich odpowiedzi.
+\end{enumerate}
+
+\section{Wymagania niefunkcjonalne}
+\subsection{Wydajność}
+\begin{enumerate}[label=\textbf{NF-\arabic*}, leftmargin=*, align=left, font=\bfseries, labelsep=1em, resume]
+    \item\label{NF-wydajność1}System powinien realizować operacje CRUD na notatkach w czasie nieprzekraczającym 1 sekundy dla pojedynczego żądania API.
+    \item\label{NF-wydajność2}System powinien zwracać wyniki wyszukiwania semantycznego w czasie nieprzekraczającym 2 sekund.
+    \item\label{NF-wydajność3}System powinien umożliwiać generowanie odpowiedzi przez model językowy w czasie do 15 sekund, z uwagi na obliczeniowy charakter tej operacji.
+    \item\label{NF-wydajność4}Wyszukiwanie semantyczne powinno być ograniczone do danych należących do danego użytkownika, aby zapobiec przeciekaniu danych innych użytkowników.
+    \item\label{NF-wydajność5}Operacje grupowania notatek nie powinny blokować operacji CRUD i powinny być wykonywane asynchronicznie w tle.
+    \item\label{NF-wydajność6}Błędy występujące podczas grupowania notatek nie powinny przerywać działania systemu ani wpływać na dostępność danych użytkownika.
+    \item\label{NF-wydajność7}System powinien synchronizować dane z vectorstore wyłącznie dla notatek, które uległy zmianie.
+    \item\label{NF-wydajność8}System powinien wykorzystywać mechanizm chunkowania notatek w celu poprawy wydajności wyszukiwania semantycznego.
+\end{enumerate}
+\subsection{Skalowalność}
+\begin{enumerate}[label=\textbf{NF-\arabic*}, leftmargin=*, align=left, font=\bfseries, labelsep=1em, resume]
+    \item\label{NF-skalowalność1}System powinien umożliwiać obsługę wielu użytkowników z logiczną separacją ich danych.
+    \item\label{NF-skalowalność2}System powinien umożliwiać migrację warstwy bazy danych do rozwiązania o wyższej skalowalności bez konieczności zmiany logiki biznesowej.
+    \item\label{NF-skalowalność3}Warstwa vectorstore powinna umożliwiać przechowywanie i przeszukiwanie dużych zbiorów embeddingów z persystencją na dysku.
+    \item\label{NF-skalowalnoś4}System powinien umożliwiać przyszłą optymalizację procesu grupowania notatek.
+    \item\label{NF-skalowalnoś5}Frontend powinien umożliwiać sprawne renderowanie dużych list notatek i grup semantycznych.
+\end{enumerate}
+\subsection{Bezpieczeństwo}
+\begin{enumerate}[label=\textbf{NF-\arabic*}, leftmargin=*, align=left, font=\bfseries, labelsep=1em, resume]
+    \item\label{NF-bezpieczeństwo1}System powinien zapewniać pełną izolację danych użytkowników poprzez filtrowanie wszystkich operacji po identyfikatorze użytkownika.
+    \item\label{NF-bezpieczeństwo2}System powinien uniemożliwiać dostęp do zasobów, których właścicielem nie jest uwierzytelniony użytkownik.
+    \item\label{NF-bezpieczeństwo3}Hasła użytkowników powinny być przechowywane wyłącznie w postaci haszy kryptograficznych z użyciem bezpiecznego algorytmu haszującego.
+    \item\label{NF-bezpieczeństwo4}System powinien weryfikować poprawność i ważność tokenów uwierzytelniających przy każdym żądaniu do chronionych endpointów API.
+    \item\label{NF-bezpieczeństwo5}System powinien zwracać odpowiednie kody błędów HTTP w przypadku naruszenia zasad autoryzacji lub walidacji danych.
+    \item\label{NF-bezpieczeństwo6}System powinien umożliwiać konfigurację polityki CORS w zależności od środowiska (rozwojowe / produkcyjne).
+\end{enumerate}
+\subsection{Użyteczność}
+\begin{enumerate}[label=\textbf{NF-\arabic*}, leftmargin=*, align=left, font=\bfseries, labelsep=1em, resume]
+    \item\label{NF-użyteczność1}Interfejs użytkownika powinien być intuicyjny i umożliwiać wykonywanie podstawowych operacji bez potrzeby zapoznawania się z dokumentacją.
+    \item\label{NF-użyteczność2}System powinien prezentować odpowiedzi generowane przez LLM wraz z czytelnymi odwołaniami do źródeł w postaci cytatów.
+    \item\label{NF-użyteczność3}Użytkownik powinien mieć możliwość interakcji z cytatami i przejścia do źródłowych notatek.
+    \item\label{NF-użyteczność4}System powinien umożliwiać przeglądanie automatycznie wygenerowanych grup semantycznych notatek.
+    \item\label{NF-użyteczność5}System powinien automatycznie aktualizować grupy semantyczne po zmianach w notatkach użytkownika.
+    \item\label{NF-użyteczność6}System powinien prezentować komunikaty błędów w sposób zrozumiały i jednoznaczny dla użytkownika.
+\end{enumerate}
+
+\section{Przypadki użycia}
+\begin{enumerate}[label=\textbf{UC-\arabic*}, leftmargin=*, align=left, font=\bfseries, labelsep=1em]
+\item\label{UC-tworzenie-notatki} Nowy użytkownik tworzy notatki
+    \begin{enumerate}[label=\arabic*.]
+        \item Użytkownik rejestruje się w systemie
+        \item Użytkownik loguje się i otrzymuje token JWT
+        \item Użytkownik tworzy kilka notatek na różne tematy
+        \item System automatycznie grupuje notatki semantycznie i tworzy grupy tematyczne
+        \item Użytkownik przegląda utworzone grupy i widzi automatycznie zorganizowane notatki
+    \end{enumerate}
+
+\item\label{UC-wyszukiwanie-informacji} Wyszukiwanie informacji w notatkach
+    \begin{enumerate}[label=\arabic*.]
+        \item Użytkownik zadaje pytanie w języku naturalnym
+        \item System wyszukuje adekwatne fragmenty notatek na podstawie podobieństwa semantycznego
+        \item System zwraca listę notatek z markerami pozycji wskazującymi, gdzie znajduje się adekwatna informacja
+        \item Użytkownik przegląda wyniki i może przejść do pełnej notatki
+    \end{enumerate}
+
+\item\label{UC-odpytywanie-llm} Zadawanie pytań i otrzymywanie odpowiedzi
+    \begin{enumerate}[label=\arabic*.]
+        \item Użytkownik zadaje pytanie
+        \item System wyszukuje adekwatne fragmenty notatek dla pytania
+        \item System konstruuje prompt z kontekstem z notatek i pytaniem użytkownika
+        \item LLM generuje odpowiedź na podstawie kontekstu z cytatami do źródłowych notatek
+        \item Użytkownik przegląda odpowiedź z interaktywnymi cytatami, które pozwalają na przejście do źródłowych notatek
+    \end{enumerate}
+
+\item\label{UC-aktualizacja-notatek} Aktualizacja notatek i automatyczne przeliczanie grup
+    \begin{enumerate}[label=\arabic*.]
+        \item Użytkownik edytuje istniejącą notatkę
+        \item System synchronizuje zmiany z vectorstore
+        \item System automatycznie przelicza grupy semantyczne dla użytkownika
+        \item Użytkownik widzi zaktualizowane grupy z nowymi nazwami
+    \end{enumerate}
+
+\item\label{UC-przeglądanie-historii-odpowiedzi} Przeglądanie historii odpowiedzi
+    \begin{enumerate}[label=\arabic*.]
+        \item Użytkownik przegląda listę wszystkich swoich odpowiedzi
+        \item Użytkownik wybiera konkretną odpowiedź
+        \item Użytkownik przegląda odpowiedź z cytatami i może przejść do źródłowych notatek
+    \end{enumerate}
+\end{enumerate}
+
+\end{document}

@@ -208,3 +208,8 @@ __marimo__/
 
 data_storage/
 utils/
+thesis/plan
+thesis/thesis.pdf
+thesis/Todo.md
+thesis/lookup_template.tex
+*.DS_Store
