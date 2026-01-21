@@ -3,7 +3,7 @@
 import re
 from typing import Optional, List, Dict, Any
 from langchain_core.documents import Document
-from app.core.domain.database import AnswerDB, INoteRepository, NoteDB
+from app.core.domain.database import AnswerDB, INoteRepository
 from app.core.domain.vectorstore import IVectorStore
 from app.infrastructure.prompts.answer_schema import AnswerSchema
 from app.infrastructure.prompts.answer_prompt import ANSWER_PROMPT_TEMPLATE
@@ -16,11 +16,13 @@ class AnswerService:
         self,
         repository: INoteRepository,
         vector_store: IVectorStore,
-        llm
+        llm,
+        note_service=None
     ):
         self.repository = repository
         self.vector_store = vector_store
         self.llm = llm
+        self.note_service = note_service
     
     def generate_answer(
         self,
@@ -165,43 +167,66 @@ class AnswerService:
         return self.repository.get_answers_by_user(user_id)
     
     def delete_answer(self, answer_id: int, user_id: int) -> bool:
-        """Delete an answer, ensuring it belongs to the user."""
-        return self.repository.delete_answer(answer_id, user_id)
-    
-    def convert_answer_to_note(
-        self,
-        answer_id: int,
-        user_id: int,
-        note_service
-    ) -> Optional[int]:
-        """Convert an answer to a note and delete the answer.
+        """Delete an answer, ensuring it belongs to the user.
         
         Args:
-            answer_id: The answer ID to convert
-            user_id: The user ID (for verification)
-            note_service: NoteService instance to create the note
+            answer_id: The ID of the answer to delete
+            user_id: The user ID to verify ownership
             
         Returns:
-            The created note ID, or None if conversion failed
+            True if deleted successfully, False otherwise
         """
+        # Verify the answer belongs to the user
+        answer = self.repository.get_answer(answer_id, user_id)
+        if not answer:
+            return False
+        
+        # Delete the answer
+        return self.repository.delete_answer(answer_id, user_id)
+    
+    def convert_answer_to_note(self, answer_id: int, user_id: int) -> Optional[int]:
+        """Convert an answer to a note and delete the answer.
+        
+        Creates a note with the answer's title and content (including question),
+        then deletes the original answer.
+        
+        Args:
+            answer_id: The ID of the answer to convert
+            user_id: The user ID to verify ownership
+            
+        Returns:
+            The ID of the created note, or None if conversion failed
+        """
+        if not self.note_service:
+            import logging
+            logging.getLogger(__name__).error("NoteService not available for answer conversion")
+            return None
+        
         # Get the answer
-        answer = self.get_answer(answer_id, user_id)
+        answer = self.repository.get_answer(answer_id, user_id)
         if not answer:
             return None
         
-        # Create note content with question and answer
-        note_content = f"Question: {answer.question}\n\nAnswer:\n{answer.answer_text}"
+        # Format note content: include question and answer
+        note_content = f"Question: {answer.question}\n\n{answer.answer_text}"
         
-        # Create the note using note_service
-        note_id = note_service.create_note(
-            title=answer.title,
-            content=note_content,
-            user_id=user_id
-        )
-        
-        # Delete the answer after successful note creation
-        if note_id:
+        # Create note using note_service (which handles vectorstore sync)
+        # Pass references so citations can be displayed
+        try:
+            note_id = self.note_service.create_note(
+                title=answer.title,
+                content=note_content,
+                user_id=user_id,
+                group_id=None,
+                references=answer.references
+            )
+            
+            # Delete the answer after successful note creation
             self.delete_answer(answer_id, user_id)
-        
-        return note_id
+            
+            return note_id
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).error(f"Failed to convert answer {answer_id} to note: {e}")
+            return None
 

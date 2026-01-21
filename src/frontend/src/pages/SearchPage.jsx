@@ -57,9 +57,6 @@ const SearchPage = () => {
     <div className="search-page">
       <div className="search-page-header">
         <h1>Search Notes</h1>
-        <p className="search-page-subtitle">
-          Find relevant notes by entering a search query
-        </p>
       </div>
 
       <form onSubmit={handleSearch} className="search-form">

@@ -48,10 +48,11 @@ def get_note_service(
 
 def get_answer_service(
     repository: Annotated[INoteRepository, Depends(get_repository)],
-    vector_store: Annotated[IVectorStore, Depends(get_vector_store)]
+    vector_store: Annotated[IVectorStore, Depends(get_vector_store)],
+    note_service: Annotated[NoteService, Depends(get_note_service)]
 ) -> AnswerService:
     """Get answer service instance."""
-    return AnswerService(repository, vector_store, llm)
+    return AnswerService(repository, vector_store, llm, note_service)
 
 async def get_current_user(
     credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)],

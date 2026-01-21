@@ -1,14 +1,16 @@
 :root {
-  /* Calm, editorial, paper-like theme */
-  --primary-color: #D6452F; /* vermilion (sparingly) */
-  --primary-hover: #C53E2B;
-  --primary-bg: rgba(214, 69, 47, 0.15);
-  --secondary-color: #355335; /* hunter green (sparingly) */
-  --secondary-hover: #5E6E5D;
-  --secondary-bg: rgba(107, 124, 106, 0.15);
-  --danger-color: #C53E2B;
-  --danger-hover: #B23A2A;
-  --danger-bg: rgba(197, 62, 43, 0.15);
+  /* Accents */
+  --primary-color: #C24A6B; /* muted rose (sparingly) */
+  --primary-hover: #A93F5C;
+  --primary-bg: rgba(194, 74, 107, 0.15);
+
+  --secondary-color: #4F6B57; /* subdued forest green (sparingly) */
+  --secondary-hover: #3F5A47;
+  --secondary-bg: rgba(79, 107, 87, 0.15);
+
+  --danger-color: #7A4A2E; /* warm brown (sparingly) */
+  --danger-hover: #653C25;
+  --danger-bg: rgba(122, 74, 46, 0.15);
 
   /* Surfaces */
   --surface: #F2EEE8; /* warm off-white app background */
@@ -23,8 +25,8 @@
   --border-strong: #BEB6AA;
 
   /* States */
-  --error-color: #B23A2A;
-  --success-color: #6B7C6A;
+  --error-color: #653C25;   /* brown, not alarming */
+  --success-color: #4F6B57; /* calm green */
 
   /* Highlight */
   --highlight-bg: #E7E2D8;
@@ -1290,21 +1292,22 @@ h3 { font-size: 1.05rem; font-weight: 650; }
 .answer-detail-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: var(--spacing-md);
   margin-bottom: var(--spacing-xl);
-  flex-wrap: wrap;
-}
-
-.answer-detail-actions {
-  display: flex;
-  gap: var(--spacing-md);
-  margin-left: auto;
 }
 
 .answer-detail-header h1 {
   font-size: 1.5rem;
   color: var(--text-primary);
   flex: 1;
+  margin: 0;
+}
+
+.answer-detail-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-shrink: 0;
 }
 
 .answer-detail-meta {

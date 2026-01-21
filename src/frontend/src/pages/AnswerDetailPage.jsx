@@ -10,6 +10,8 @@ const AnswerDetailPage = () => {
   const [answer, setAnswer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [actionError, setActionError] = useState(null);
+  const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
     const fetchAnswer = async () => {
@@ -92,23 +94,34 @@ const AnswerDetailPage = () => {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete this answer?')) {
+    if (!window.confirm('Are you sure you want to delete this answer? This action cannot be undone.')) {
       return;
     }
 
+    setActionLoading(true);
+    setActionError(null);
+
     const result = await deleteAnswer(id);
+    setActionLoading(false);
+
     if (result.success) {
       navigate('/ask');
     } else {
-      alert(result.error || 'Failed to delete answer');
+      setActionError(result.error || 'Failed to delete answer');
     }
   };
 
-  const handleConvertToNote = async () => {const result = await convertAnswerToNote(id);
-    if (result.success) {
-      navigate(`/notes/${result.data.note_id}`);
+  const handleConvertToNote = async () => {
+    setActionLoading(true);
+    setActionError(null);
+
+    const result = await convertAnswerToNote(id);
+    setActionLoading(false);
+
+    if (result.success && result.data) {
+      navigate(`/notes/${result.data.id}`);
     } else {
-      alert(result.error || 'Failed to convert answer to note');
+      setActionError(result.error || 'Failed to convert answer to note');
     }
   };
 
@@ -154,14 +167,28 @@ const AnswerDetailPage = () => {
       <div className="answer-detail-header">
         <h1>{answer.title}</h1>
         <div className="answer-detail-actions">
-          <button className="btn btn-primary" onClick={handleConvertToNote}>
-            Add to Notes
+          <button
+            className="btn btn-primary"
+            onClick={handleConvertToNote}
+            disabled={actionLoading}
+          >
+            {actionLoading ? 'Processing...' : 'Add to Notes'}
           </button>
-          <button className="btn btn-danger" onClick={handleDelete}>
-            Delete
+          <button
+            className="btn btn-danger"
+            onClick={handleDelete}
+            disabled={actionLoading}
+          >
+            {actionLoading ? 'Deleting...' : 'Delete Answer'}
           </button>
         </div>
       </div>
+
+      {actionError && (
+        <div className="error-message" style={{ marginBottom: '1rem' }}>
+          {actionError}
+        </div>
+      )}
 
       <div className="answer-detail-meta">
         <p className="answer-question"><strong>Question:</strong> {answer.question}</p>

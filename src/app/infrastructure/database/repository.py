@@ -60,8 +60,14 @@ class AppRepository(INoteRepository):
             if group:
                 # Mapowanie robimy WEWNĄTRZ sesji
                 notes_domain = [
-                    NoteDB(id=n.id, title=n.title, content=n.content, 
-                           user_id=n.user_id, group_id=n.group_id) 
+                    NoteDB(
+                        id=n.id, 
+                        title=n.title, 
+                        content=n.content, 
+                        user_id=n.user_id, 
+                        group_id=n.group_id,
+                        references=n.references
+                    ) 
                     for n in group.notes
                 ]
                 return GroupDB(id=group.id, user_id=group.user_id, 
@@ -76,9 +82,17 @@ class AppRepository(INoteRepository):
             results = []
             for g in groups:
                 # Najpierw wyciągamy notatki, póki sesja trwa
-                notes = [NoteDB(id=n.id, title=n.title, content=n.content, 
-                                user_id=n.user_id, group_id=n.group_id) 
-                         for n in g.notes]
+                notes = [
+                    NoteDB(
+                        id=n.id, 
+                        title=n.title, 
+                        content=n.content, 
+                        user_id=n.user_id, 
+                        group_id=n.group_id,
+                        references=n.references
+                    ) 
+                    for n in g.notes
+                ]
                 results.append(GroupDB(id=g.id, user_id=g.user_id, 
                                        summary=g.summary, notes=notes))
             return results
@@ -93,8 +107,13 @@ class AppRepository(INoteRepository):
     def create_note(self, note_db: NoteDB) -> int:
         with self._get_session() as session:
             with session.begin():
-                note = Note(title=note_db.title, content=note_db.content, 
-                            user_id=note_db.user_id, group_id=note_db.group_id)
+                note = Note(
+                    title=note_db.title, 
+                    content=note_db.content, 
+                    user_id=note_db.user_id, 
+                    group_id=note_db.group_id,
+                    references=note_db.references
+                )
                 session.add(note)
                 session.flush()
                 return note.id
@@ -109,6 +128,7 @@ class AppRepository(INoteRepository):
                     content=note.content,
                     user_id=note.user_id,
                     group_id=note.group_id,
+                    references=note.references,
                     created_at=note.created_at,
                     updated_at=note.updated_at
                 )
@@ -125,6 +145,7 @@ class AppRepository(INoteRepository):
                     content=n.content,
                     user_id=n.user_id,
                     group_id=n.group_id,
+                    references=n.references,
                     created_at=n.created_at,
                     updated_at=n.updated_at
                 )
@@ -136,7 +157,8 @@ class AppRepository(INoteRepository):
         return self._update_entity(Note, note_db.id, 
                                    title=note_db.title, 
                                    content=note_db.content, 
-                                   group_id=note_db.group_id)
+                                   group_id=note_db.group_id,
+                                   references=note_db.references)
 
     # --- DELETION OPERATIONS ---
     def delete_user(self, user_id: int) -> bool:

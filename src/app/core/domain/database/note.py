@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Dict, Any
 
 @dataclass
 class NoteDB:
@@ -11,3 +11,4 @@ class NoteDB:
     created_at: datetime = field(default_factory=datetime.now)
     updated_at: datetime = field(default_factory=datetime.now)
     group_id: Optional[int] = None
+    references: Optional[Dict[str, Dict[str, Any]]] = None

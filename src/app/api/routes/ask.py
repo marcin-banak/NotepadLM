@@ -3,6 +3,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import Annotated
 from app.api.schemas.answer import AskRequest, AskResponse, AnswerResponse
+from app.api.schemas.note import NoteResponse
 from typing import List
 from app.core.services.answer_service import AnswerService
 from app.core.services.note_service import NoteService
@@ -105,11 +106,12 @@ async def delete_answer(
     if not success:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Answer not found"
+            detail="Answer not found or access denied"
         )
+    return None
 
 
-@router.post("/answer/{answer_id}/convert-to-note", status_code=status.HTTP_201_CREATED)
+@router.post("/answer/{answer_id}/convert-to-note", response_model=NoteResponse)
 async def convert_answer_to_note(
     answer_id: int,
     current_user: Annotated[UserDB, Depends(get_current_user)],
@@ -117,17 +119,30 @@ async def convert_answer_to_note(
     note_service: Annotated[NoteService, Depends(get_note_service)]
 ):
     """Convert an answer to a note and delete the answer."""
-    note_id = answer_service.convert_answer_to_note(
-        answer_id=answer_id,
-        user_id=current_user.id,
-        note_service=note_service
-    )
+    note_id = answer_service.convert_answer_to_note(answer_id, current_user.id)
     
     if note_id is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Answer not found or conversion failed"
+            detail="Answer not found, access denied, or conversion failed"
         )
     
-    return {"note_id": note_id}
+    # Get the created note
+    note = note_service.get_note(note_id, current_user.id)
+    if note is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to retrieve created note"
+        )
+    
+    return NoteResponse(
+        id=note.id,
+        title=note.title,
+        content=note.content,
+        user_id=note.user_id,
+        group_id=note.group_id,
+        references=note.references,
+        created_at=note.created_at,
+        updated_at=note.updated_at
+    )
 

@@ -1,7 +1,7 @@
 """Note schemas."""
 
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 from pydantic import BaseModel
 
 
@@ -26,6 +26,7 @@ class NoteResponse(BaseModel):
     content: str
     user_id: int
     group_id: Optional[int]
+    references: Optional[Dict[str, Dict[str, Any]]] = None
     created_at: datetime
     updated_at: datetime
     

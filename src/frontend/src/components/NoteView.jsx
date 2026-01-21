@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as noteService from '../services/noteService';
+import CitationTooltip from './CitationTooltip';
 
 const NoteView = ({ noteId, onDelete }) => {
   const [note, setNote] = useState(null);
@@ -47,6 +48,64 @@ const NoteView = ({ noteId, onDelete }) => {
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  // Parse citations from note content if references exist
+  const parseContentWithCitations = (content, references) => {
+    if (!references || Object.keys(references).length === 0) {
+      // No references, return null to use default paragraph rendering
+      return null;
+    }
+
+    // Parse citations similar to AnswerDetailPage
+    const citationPattern = /\[(\d+)\]/g;
+    const parts = [];
+    let lastIndex = 0;
+    let match;
+
+    while ((match = citationPattern.exec(content)) !== null) {
+      // Add text before citation
+      if (match.index > lastIndex) {
+        parts.push({
+          type: 'text',
+          content: content.substring(lastIndex, match.index)
+        });
+      }
+
+      // Add citation
+      const citationNum = match[1];
+      const reference = references[citationNum];
+      if (reference) {
+        parts.push({
+          type: 'citation',
+          citationNumber: citationNum,
+          chunkText: reference.chunk_text,
+          noteId: reference.note_id
+        });
+      } else {
+        // Reference not found, just show as text
+        parts.push({
+          type: 'text',
+          content: match[0]
+        });
+      }
+
+      lastIndex = match.index + match[0].length;
+    }
+
+    // Add remaining text
+    if (lastIndex < content.length) {
+      parts.push({
+        type: 'text',
+        content: content.substring(lastIndex)
+      });
+    }
+
+    return parts.length > 0 ? parts : [{ type: 'text', content }];
+  };
+
+  const handleCitationClick = (noteId) => {
+    navigate(`/notes/${noteId}`);
+  };
+
   if (loading) {
     return <div className="loading">Loading note...</div>;
   }
@@ -58,6 +117,8 @@ const NoteView = ({ noteId, onDelete }) => {
   if (!note) {
     return <div className="error-message">Note not found</div>;
   }
+
+  const contentParts = parseContentWithCitations(note.content, note.references);
 
   return (
     <div className="note-view">
@@ -89,13 +150,34 @@ const NoteView = ({ noteId, onDelete }) => {
         )}
       </div>
       <div className="note-view-content">
-        {note.content.split('\n').map((paragraph, index) => (
-          paragraph.trim() ? (
-            <p key={index}>{paragraph}</p>
-          ) : (
-            <br key={index} />
-          )
-        ))}
+        {contentParts ? (
+          // Render with citations
+          contentParts.map((part, index) => {
+            if (part.type === 'citation') {
+              return (
+                <CitationTooltip
+                  key={index}
+                  citationNumber={part.citationNumber}
+                  chunkText={part.chunkText}
+                  noteId={part.noteId}
+                  onNavigate={handleCitationClick}
+                />
+              );
+            } else {
+              // Regular text - preserve newlines
+              return <span key={index}>{part.content}</span>;
+            }
+          })
+        ) : (
+          // Default rendering without citations
+          note.content.split('\n').map((paragraph, index) => (
+            paragraph.trim() ? (
+              <p key={index}>{paragraph}</p>
+            ) : (
+              <br key={index} />
+            )
+          ))
+        )}
       </div>
     </div>
   );

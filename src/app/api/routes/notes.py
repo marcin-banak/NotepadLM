@@ -35,6 +35,7 @@ async def create_note(
         content=note.content,
         user_id=note.user_id,
         group_id=note.group_id,
+        references=note.references,
         created_at=note.created_at,
         updated_at=note.updated_at
     )
@@ -70,6 +71,7 @@ async def bulk_create_notes(
                 content=note.content,
                 user_id=note.user_id,
                 group_id=note.group_id,
+                references=note.references,
                 created_at=note.created_at,
                 updated_at=note.updated_at
             ))
@@ -94,6 +96,7 @@ async def list_notes(
             content=note.content,
             user_id=note.user_id,
             group_id=note.group_id,
+            references=note.references,
             created_at=note.created_at,
             updated_at=note.updated_at
         )
@@ -120,6 +123,7 @@ async def get_note(
         content=note.content,
         user_id=note.user_id,
         group_id=note.group_id,
+        references=note.references,
         created_at=note.created_at,
         updated_at=note.updated_at
     )
@@ -157,6 +161,7 @@ async def update_note(
         content=note.content,
         user_id=note.user_id,
         group_id=note.group_id,
+        references=note.references,
         created_at=note.created_at,
         updated_at=note.updated_at
     )

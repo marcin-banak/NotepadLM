@@ -6,19 +6,44 @@ const NoteDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const isNew = id === 'new';
+  // Check pathname first to handle routing edge cases
+  const isNew = location.pathname === '/notes/new' || id === 'new';
   const isEdit = location.pathname.includes('/edit');
+  
+  // Debug logging
+  console.log('NoteDetailPage render:', { id, pathname: location.pathname, isNew, isEdit });
 
-  const handleSave = () => {
+  const handleSave = (noteData) => {
+    console.log('NoteDetailPage handleSave called with:', noteData, 'isNew:', isNew);
     // After saving, navigate to view mode
     if (!isNew) {
-      navigate(`/notes/${id}`);
+      // Editing existing note - go back to view mode
+      console.log('Editing note, navigating to:', `/notes/${id}`);
+      navigate(`/notes/${id}`, { replace: true });
     } else {
-      const returnTo = location.state?.returnTo;
-      if (returnTo) {
-        navigate(returnTo);
+      // For new notes, navigate to the created note's detail page
+      console.log('Creating new note, noteData:', noteData);
+      if (noteData && noteData.id !== undefined && noteData.id !== null) {
+        const noteId = typeof noteData.id === 'number' ? noteData.id : parseInt(noteData.id);
+        console.log('Parsed noteId:', noteId);
+        if (!isNaN(noteId) && noteId > 0) {
+          // Use replace to avoid back button issues
+          console.log('Navigating to:', `/notes/${noteId}`);
+          navigate(`/notes/${noteId}`, { replace: true });
+        } else {
+          console.error('Invalid noteId:', noteId);
+          // Invalid ID - go to notes list
+          navigate('/notes', { replace: true });
+        }
       } else {
-        navigate('/notes');
+        console.error('No ID in noteData:', noteData);
+        // No ID - go to notes list
+        const returnTo = location.state?.returnTo;
+        if (returnTo) {
+          navigate(returnTo, { replace: true });
+        } else {
+          navigate('/notes', { replace: true });
+        }
       }
     }
   };
@@ -41,6 +66,7 @@ const NoteDetailPage = () => {
     navigate('/notes');
   };
 
+  // First check if we're creating or editing - this must come first!
   if (isNew || isEdit) {
     return (
       <div className="note-detail-page">
@@ -54,9 +80,34 @@ const NoteDetailPage = () => {
     );
   }
 
+  // If we get here, we should have a valid numeric id for viewing
+  if (!id) {
+    return (
+      <div className="note-detail-page">
+        <div className="error-message">Invalid note ID</div>
+        <button className="btn btn-primary" onClick={() => navigate('/notes')}>
+          Back to Notes
+        </button>
+      </div>
+    );
+  }
+
+  const noteId = parseInt(id);
+  
+  if (isNaN(noteId) || noteId <= 0) {
+    return (
+      <div className="note-detail-page">
+        <div className="error-message">Invalid note ID</div>
+        <button className="btn btn-primary" onClick={() => navigate('/notes')}>
+          Back to Notes
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="note-detail-page">
-      <NoteView noteId={parseInt(id)} onDelete={handleDelete} />
+      <NoteView noteId={noteId} onDelete={handleDelete} />
     </div>
   );
 };

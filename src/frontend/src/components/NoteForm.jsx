@@ -42,9 +42,12 @@ const NoteForm = ({ noteId, onSave, onCancel }) => {
 
     setLoading(false);
 
-    if (result.success) {
+    if (result.success && result.data) {
+      // Pass the note data to onSave callback
+      console.log('NoteForm: Success, calling onSave with:', result.data);
       onSave(result.data);
     } else {
+      console.error('NoteForm: Error:', result.error);
       setError(result.error || 'Failed to save note');
     }
   };

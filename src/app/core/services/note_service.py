@@ -1,6 +1,6 @@
 """Note service for note-related operations."""
 
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Dict, Any
 from app.core.domain.database import NoteDB, GroupDB
 from app.core.domain.database import INoteRepository
 from app.core.domain.vectorstore import IVectorStore, NoteVS
@@ -172,14 +172,15 @@ class NoteService:
             logging.getLogger(__name__).error(f"Failed to recalculate groups for user {user_id}: {e}", exc_info=True)
             return False
     
-    def create_note(self, title: str, content: str, user_id: int, group_id: Optional[int] = None) -> int:
+    def create_note(self, title: str, content: str, user_id: int, group_id: Optional[int] = None, references: Optional[Dict[str, Dict[str, Any]]] = None) -> int:
         """Create a new note for a user."""
         note_db = NoteDB(
             id=None,
             title=title,
             content=content,
             user_id=user_id,
-            group_id=group_id
+            group_id=group_id,
+            references=references
         )
         note_id = self.repository.create_note(note_db)
         
@@ -213,13 +214,15 @@ class NoteService:
                 title = note_data.get("title", "Untitled Note")
                 content = note_data.get("content", "")
                 group_id = note_data.get("group_id")
+                references = note_data.get("references")
                 
                 note_db = NoteDB(
                     id=None,
                     title=title,
                     content=content,
                     user_id=user_id,
-                    group_id=group_id
+                    group_id=group_id,
+                    references=references
                 )
                 note_id = self.repository.create_note(note_db)
                 created_ids.append(note_id)
@@ -272,7 +275,8 @@ class NoteService:
         return self.repository.get_notes_by_user(user_id)
     
     def update_note(self, note_id: int, user_id: int, title: Optional[str] = None, 
-                    content: Optional[str] = None, group_id: Optional[int] = None) -> Optional[int]:
+                    content: Optional[str] = None, group_id: Optional[int] = None,
+                    references: Optional[Dict[str, Dict[str, Any]]] = None) -> Optional[int]:
         """Update a note, ensuring it belongs to the user."""
         note = self.repository.get_note(note_id)
         if not note or note.user_id != user_id:
@@ -288,6 +292,8 @@ class NoteService:
             note.content = content
         if group_id is not None:
             note.group_id = group_id
+        if references is not None:
+            note.references = references
         
         updated_id = self.repository.update_note(note)
         
