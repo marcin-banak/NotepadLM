@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { getAnswer } from '../services/answerService';
+import { getAnswer, deleteAnswer, convertAnswerToNote } from '../services/answerService';
 import CitationTooltip from '../components/CitationTooltip';
 
 const AnswerDetailPage = () => {
@@ -91,6 +91,27 @@ const AnswerDetailPage = () => {
     }
   };
 
+  const handleDelete = async () => {
+    if (!window.confirm('Are you sure you want to delete this answer?')) {
+      return;
+    }
+
+    const result = await deleteAnswer(id);
+    if (result.success) {
+      navigate('/ask');
+    } else {
+      alert(result.error || 'Failed to delete answer');
+    }
+  };
+
+  const handleConvertToNote = async () => {const result = await convertAnswerToNote(id);
+    if (result.success) {
+      navigate(`/notes/${result.data.note_id}`);
+    } else {
+      alert(result.error || 'Failed to convert answer to note');
+    }
+  };
+
   if (loading) {
     return (
       <div className="answer-detail-page">
@@ -131,10 +152,15 @@ const AnswerDetailPage = () => {
   return (
     <div className="answer-detail-page">
       <div className="answer-detail-header">
-        <button className="btn btn-secondary" onClick={handleBack}>
-          ← Back
-        </button>
         <h1>{answer.title}</h1>
+        <div className="answer-detail-actions">
+          <button className="btn btn-primary" onClick={handleConvertToNote}>
+            Add to Notes
+          </button>
+          <button className="btn btn-danger" onClick={handleDelete}>
+            Delete
+          </button>
+        </div>
       </div>
 
       <div className="answer-detail-meta">

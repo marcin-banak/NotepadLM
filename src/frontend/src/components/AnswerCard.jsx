@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 
-const AnswerCard = ({ answer, onSelect }) => {
+const AnswerCard = ({ answer, onSelect, compact = false, isActive = false }) => {
   const navigate = useNavigate();
 
   const formatDate = (dateString) => {
@@ -15,6 +15,14 @@ const AnswerCard = ({ answer, onSelect }) => {
       navigate(`/answer/${answer.id}`);
     }
   };
+
+  if (compact) {
+    return (
+      <div className={`answer-card answer-card-compact ${isActive ? 'active' : ''}`} onClick={handleClick}>
+        <div className="answer-card-title-compact">{answer.title}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="answer-card" onClick={handleClick}>

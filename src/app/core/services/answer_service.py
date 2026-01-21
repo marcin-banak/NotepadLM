@@ -3,7 +3,7 @@
 import re
 from typing import Optional, List, Dict, Any
 from langchain_core.documents import Document
-from app.core.domain.database import AnswerDB, INoteRepository
+from app.core.domain.database import AnswerDB, INoteRepository, NoteDB
 from app.core.domain.vectorstore import IVectorStore
 from app.infrastructure.prompts.answer_schema import AnswerSchema
 from app.infrastructure.prompts.answer_prompt import ANSWER_PROMPT_TEMPLATE
@@ -163,4 +163,45 @@ class AnswerService:
     def get_answers_by_user(self, user_id: int) -> List[AnswerDB]:
         """Get all answers for a user."""
         return self.repository.get_answers_by_user(user_id)
+    
+    def delete_answer(self, answer_id: int, user_id: int) -> bool:
+        """Delete an answer, ensuring it belongs to the user."""
+        return self.repository.delete_answer(answer_id, user_id)
+    
+    def convert_answer_to_note(
+        self,
+        answer_id: int,
+        user_id: int,
+        note_service
+    ) -> Optional[int]:
+        """Convert an answer to a note and delete the answer.
+        
+        Args:
+            answer_id: The answer ID to convert
+            user_id: The user ID (for verification)
+            note_service: NoteService instance to create the note
+            
+        Returns:
+            The created note ID, or None if conversion failed
+        """
+        # Get the answer
+        answer = self.get_answer(answer_id, user_id)
+        if not answer:
+            return None
+        
+        # Create note content with question and answer
+        note_content = f"Question: {answer.question}\n\nAnswer:\n{answer.answer_text}"
+        
+        # Create the note using note_service
+        note_id = note_service.create_note(
+            title=answer.title,
+            content=note_content,
+            user_id=user_id
+        )
+        
+        # Delete the answer after successful note creation
+        if note_id:
+            self.delete_answer(answer_id, user_id)
+        
+        return note_id
 

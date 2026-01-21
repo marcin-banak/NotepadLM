@@ -2,9 +2,11 @@ import Navbar from './Navbar';
 
 const Layout = ({ children }) => {
   return (
-    <div className="layout">
+    <div className="layout app-shell">
       <Navbar />
-      <main className="main-content">{children}</main>
+      <main className="app-content">
+        <div className="content-inner">{children}</div>
+      </main>
     </div>
   );
 };

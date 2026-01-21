@@ -57,25 +57,10 @@ const GroupDetailPage = () => {
   return (
     <div className="note-detail-page">
       <div style={{ marginBottom: 'var(--spacing-xl)' }}>
-        <button
-          className="btn btn-secondary"
-          onClick={() => navigate('/groups')}
-          style={{ marginBottom: 'var(--spacing-md)' }}
-        >
-          ← Back to Groups
-        </button>
         <h1>{group.summary || `Group ${group.id}`}</h1>
-        {group.summary && (
-          <p style={{ color: 'var(--text-secondary)', marginTop: 'var(--spacing-md)' }}>
-            {group.summary}
-          </p>
-        )}
       </div>
 
       <div>
-        <h2 style={{ marginBottom: 'var(--spacing-lg)', color: 'var(--text-primary)' }}>
-          Notes in this group ({notes.length})
-        </h2>
         {notes.length === 0 ? (
           <div className="empty-state">
             <p>No notes in this group yet.</p>

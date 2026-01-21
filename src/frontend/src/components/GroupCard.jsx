@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import * as groupService from '../services/groupService';
 
-const GroupCard = ({ group, onDelete }) => {
+const GroupCard = ({ group, onDelete, isSelected = false, onSelect }) => {
   const navigate = useNavigate();
 
   const handleDelete = async (e) => {
@@ -16,10 +16,36 @@ const GroupCard = ({ group, onDelete }) => {
     }
   };
 
+  const handleSelect = (e) => {
+    e.stopPropagation();
+    if (onSelect) {
+      onSelect();
+    }
+  };
+
+  const handleCardClick = (e) => {
+    // Don't navigate if clicking checkbox or buttons
+    if (e.target.type === 'checkbox' || e.target.closest('button') || e.target.closest('.note-card-checkbox')) {
+      return;
+    }
+    navigate(`/groups/${group.id}`);
+  };
+
   const noteCount = group.notes ? group.notes.length : 0;
 
   return (
-    <div className="note-card" onClick={() => navigate(`/groups/${group.id}`)}>
+    <div className={`note-card ${isSelected ? 'selected' : ''}`} onClick={handleCardClick}>
+      {onSelect && (
+        <div className="note-card-checkbox" onClick={handleSelect}>
+          <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={handleSelect}
+            onClick={(e) => e.stopPropagation()}
+            style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+          />
+        </div>
+      )}
       <div className="note-card-header">
         <h3 className="note-card-title">
           {group.summary || `Group ${group.id}`}
@@ -33,12 +59,6 @@ const GroupCard = ({ group, onDelete }) => {
             }}
           >
             View
-          </button>
-          <button
-            className="btn btn-small btn-danger"
-            onClick={handleDelete}
-          >
-            Delete
           </button>
         </div>
       </div>

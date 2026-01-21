@@ -27,7 +27,7 @@ const SearchResultCard = ({ result }) => {
     return (
       <>
         {before}
-        <mark style={{ backgroundColor: '#fef08a', padding: '2px 4px', borderRadius: '3px' }}>
+        <mark className="text-highlight">
           {chunk}
         </mark>
         {after}

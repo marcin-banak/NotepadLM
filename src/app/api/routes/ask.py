@@ -5,8 +5,9 @@ from typing import Annotated
 from app.api.schemas.answer import AskRequest, AskResponse, AnswerResponse
 from typing import List
 from app.core.services.answer_service import AnswerService
+from app.core.services.note_service import NoteService
 from app.core.domain.database import UserDB
-from app.dependencies import get_current_user, get_answer_service
+from app.dependencies import get_current_user, get_answer_service, get_note_service
 
 router = APIRouter(prefix="/ask", tags=["ask"])
 
@@ -90,4 +91,43 @@ async def get_user_answers(
         )
         for answer in answers
     ]
+
+
+@router.delete("/answer/{answer_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_answer(
+    answer_id: int,
+    current_user: Annotated[UserDB, Depends(get_current_user)],
+    answer_service: Annotated[AnswerService, Depends(get_answer_service)]
+):
+    """Delete an answer."""
+    success = answer_service.delete_answer(answer_id, current_user.id)
+    
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Answer not found"
+        )
+
+
+@router.post("/answer/{answer_id}/convert-to-note", status_code=status.HTTP_201_CREATED)
+async def convert_answer_to_note(
+    answer_id: int,
+    current_user: Annotated[UserDB, Depends(get_current_user)],
+    answer_service: Annotated[AnswerService, Depends(get_answer_service)],
+    note_service: Annotated[NoteService, Depends(get_note_service)]
+):
+    """Convert an answer to a note and delete the answer."""
+    note_id = answer_service.convert_answer_to_note(
+        answer_id=answer_id,
+        user_id=current_user.id,
+        note_service=note_service
+    )
+    
+    if note_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Answer not found or conversion failed"
+        )
+    
+    return {"note_id": note_id}
 

@@ -39,3 +39,27 @@ export const getUserAnswers = async () => {
   }
 };
 
+export const deleteAnswer = async (answerId) => {
+  try {
+    await apiClient.delete(`/ask/answer/${answerId}`);
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.detail || 'Failed to delete answer',
+    };
+  }
+};
+
+export const convertAnswerToNote = async (answerId) => {
+  try {
+    const response = await apiClient.post(`/ask/answer/${answerId}/convert-to-note`);
+    return { success: true, data: response.data };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.response?.data?.detail || 'Failed to convert answer to note',
+    };
+  }
+};
+

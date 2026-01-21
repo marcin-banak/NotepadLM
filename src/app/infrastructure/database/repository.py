@@ -239,3 +239,13 @@ class AppRepository(INoteRepository):
                 )
                 for a in answers
             ]
+
+    def delete_answer(self, answer_id: int, user_id: int) -> bool:
+        """Delete an answer, ensuring it belongs to the user."""
+        with self._get_session() as session:
+            with session.begin():
+                answer = session.get(Answer, answer_id)
+                if answer and answer.user_id == user_id:
+                    session.delete(answer)
+                    return True
+                return False
