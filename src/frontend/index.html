@@ -5,9 +5,13 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NotepadLM</title>
+    <!-- Load sakura-js CSS -->
+    <link rel="stylesheet" href="/sakura.min.css" />
   </head>
   <body>
     <div id="root"></div>
+    <!-- Load sakura-js before React app - window.Sakura will be available -->
+    <script src="/sakura.min.js"></script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

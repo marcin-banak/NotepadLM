@@ -74,7 +74,7 @@ const SearchPage = () => {
         </div>
         <div className="search-params">
           <div className="form-group search-param-group">
-            <label htmlFor="k">Max Results (k)</label>
+            <label htmlFor="k">Max Results</label>
             <input
               id="k"
               type="number"

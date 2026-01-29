@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useSakura } from '../context/SakuraContext';
 import { getUserAnswers } from '../services/answerService';
 import AnswerCard from './AnswerCard';
 
 const Navbar = () => {
   const { isAuthenticated, logout, user } = useAuth();
+  const { isEnabled, toggleSakura } = useSakura();
   const location = useLocation();
   const navigate = useNavigate();
   const [answers, setAnswers] = useState([]);
@@ -38,9 +40,19 @@ const Navbar = () => {
   return (
     <aside className="sidebar">
       <div className="sidebar-inner">
-        <Link to="/" className="sidebar-brand">
-          NotepadLM
-        </Link>
+        <div className="sidebar-brand-container">
+          <Link to="/" className="sidebar-brand">
+            NotepadLM
+          </Link>
+          <button
+            onClick={toggleSakura}
+            className={`sakura-toggle ${isEnabled ? 'active' : ''}`}
+            aria-label="Toggle sakura petals"
+            title={isEnabled ? 'Wyłącz płatki' : 'Włącz płatki'}
+          >
+            🍂
+          </button>
+        </div>
 
         <nav className="sidebar-nav" aria-label="Primary navigation">
           {isAuthenticated ? (

@@ -1,16 +1,14 @@
 :root {
-  /* Accents */
-  --primary-color: #C24A6B; /* muted rose (sparingly) */
-  --primary-hover: #A93F5C;
-  --primary-bg: rgba(194, 74, 107, 0.15);
-
-  --secondary-color: #4F6B57; /* subdued forest green (sparingly) */
-  --secondary-hover: #3F5A47;
-  --secondary-bg: rgba(79, 107, 87, 0.15);
-
-  --danger-color: #7A4A2E; /* warm brown (sparingly) */
-  --danger-hover: #653C25;
-  --danger-bg: rgba(122, 74, 46, 0.15);
+  /* Calm, editorial, paper-like theme */
+  --primary-color: #D6452F; /* vermilion (sparingly) */
+  --primary-hover: #C53E2B;
+  --primary-bg: rgba(214, 69, 47, 0.15);
+  --secondary-color: #355335; /* hunter green (sparingly) */
+  --secondary-hover: #5E6E5D;
+  --secondary-bg: rgba(107, 124, 106, 0.15);
+  --danger-color: #C53E2B;
+  --danger-hover: #B23A2A;
+  --danger-bg: rgba(197, 62, 43, 0.15);
 
   /* Surfaces */
   --surface: #F2EEE8; /* warm off-white app background */
@@ -25,8 +23,8 @@
   --border-strong: #BEB6AA;
 
   /* States */
-  --error-color: #653C25;   /* brown, not alarming */
-  --success-color: #4F6B57; /* calm green */
+  --error-color: #B23A2A;
+  --success-color: #6B7C6A;
 
   /* Highlight */
   --highlight-bg: #E7E2D8;
@@ -131,11 +129,45 @@ h3 { font-size: 1.05rem; font-weight: 650; }
   overflow: hidden;
 }
 
+.sidebar-brand-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
 .sidebar-brand {
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--text-primary);
   text-decoration: none;
+  flex: 1;
+}
+
+.sakura-toggle {
+  background: transparent;
+  border: 1px solid transparent;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  border-radius: var(--border-radius);
+  transition: background-color 0.15s, border-color 0.15s, opacity 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+}
+
+.sakura-toggle:hover {
+  background-color: var(--highlight-bg);
+  border-color: var(--border-color);
+}
+
+.sakura-toggle.active {
+  background-color: var(--primary-bg);
+  border-color: var(--primary-color);
+  opacity: 1;
 }
 
 .sidebar-nav {
@@ -263,6 +295,27 @@ h3 { font-size: 1.05rem; font-weight: 650; }
   max-width: var(--content-max);
   width: 100%;
   margin: 0 auto;
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Fixed background container for sakura petals - always viewport size */
+#sakura-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1; /* Umieszcza płatki ZA panelami */
+  pointer-events: none; /* Upewnia się, że nie zablokują klikania */
+  background: transparent;
+  overflow: hidden;
+}
+
+/* Sakura petals styling */
+#sakura-background .sakura {
+  pointer-events: none;
+  position: absolute;
 }
 
 /* Navbar */
