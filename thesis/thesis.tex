@@ -561,7 +561,7 @@ Podsumowując, system NotepadLM spełnia założone cele projektowe i może być
 \begin{itemize}
     \item Python 3.12
     \item PDM (Python Dependency Manager)
-    \item Klucz API Google Gemini\footnote{Można wygenerować darmowy klucz w \href{https://aistudio.google.com}{google ai studio}.}
+    \item Klucz API Google Gemini\footnote{Można wygenerować darmowy klucz w \href{https://aistudio.google.com}{google ai studio}. Należy jednak pamiętać, że ma on swoje ograniczenia.}
 \end{itemize}
 
 \textbf{Frontend:}
@@ -607,7 +607,7 @@ System można uruchomić z katalogu głównego automatycznie za pomocą skryptu 
 
 \section{Rejestracja i logowanie}
 
-Na rys.~\ref{img:login} przedstawiono formularz umożliwiający zarówno rejestrację nowego użytkownika, jak i logowanie do systemu.
+Na rysunku~\ref{img:login} przedstawiono formularz umożliwiający zarówno rejestrację nowego użytkownika, jak i logowanie do systemu.
 
 \begin{figure}[!htbp]
     \centering
@@ -630,7 +630,7 @@ Aby zakończyć sesję, użytkownik może skorzystać z opcji \textbf{Logout} (r
 
 \section{Zarządzanie notatkami}
 
-Na rys.~\ref{img:notes} przedstawiono główny widok notatek użytkownika, umożliwiający tworzenie, przeglądanie, edycję oraz usuwanie notatek.
+Na rysunku ~\ref{img:notes} przedstawiono główny widok notatek użytkownika, umożliwiający tworzenie, przeglądanie, edycję oraz usuwanie notatek.
 
 \begin{figure}[!htbp]
     \centering
@@ -654,7 +654,7 @@ Notatki można usunąć poprzez zaznaczenie wybranych notatek (rys.~\ref{img:not
 
 \section{Grupy semantyczne}
 
-Na rys.~\ref{img:groups} przedstawiono widok grup notatek użytkownika, umożliwiający przeglądanie, tworzenie oraz zarządzanie grupami semantycznymi.
+Na rysunku~\ref{img:groups} przedstawiono widok grup notatek użytkownika, umożliwiający przeglądanie, tworzenie oraz zarządzanie grupami semantycznymi.
 
 \begin{figure}[!htbp]
     \centering
@@ -677,7 +677,7 @@ Tworzenie i przypisywanie notatek do grup odbywa się poprzez wybranie opcji \te
 
 \section{Wyszukiwanie notatek}
 
-Na rys.~\ref{img:search} przedstawiono widok semantycznego wyszukiwania notatek użytkownika, umożliwiający szybkie i inteligentne odnajdywanie treści w systemie.
+Na rysunku.~\ref{img:search} przedstawiono widok semantycznego wyszukiwania notatek użytkownika, umożliwiający szybkie i inteligentne odnajdywanie treści w systemie.
 
 \begin{figure}[!htbp]
     \centering
@@ -705,7 +705,7 @@ Podczas wyszukiwania można korzystać z parametrów konfiguracyjnych, które wp
     \label{img:ask}
 \end{figure}
 
-Na (rys.~\ref{img:ask}) przedstawiono panel umożliwiający zadawanie pytań modelowi językowemu. Aby zadać pytanie, użytkownik przechodzi do strony \textbf{Ask} w interfejsie aplikacji, wprowadza treść pytania w odpowiednim polu i zatwierdza je przyciskiem \textbf{Ask Question}. System automatycznie wyszukuje fragmenty notatek powiązanych tematycznie z pytaniem, a następnie generuje odpowiedź przy użyciu modelu językowego, zapewniając spójność i trafność udzielanej informacji oraz dodając cytacje użytych notatek.
+Na rysunku~\ref{img:ask} przedstawiono panel umożliwiający zadawanie pytań modelowi językowemu. Aby zadać pytanie, użytkownik przechodzi do strony \textbf{Ask} w interfejsie aplikacji, wprowadza treść pytania w odpowiednim polu i zatwierdza je przyciskiem \textbf{Ask Question}. System automatycznie wyszukuje fragmenty notatek powiązanych tematycznie z pytaniem, a następnie generuje odpowiedź przy użyciu modelu językowego, zapewniając spójność i trafność udzielanej informacji oraz dodając cytacje użytych notatek.
 
 \subsection{Wyświetlanie odpowiedzi}
 
@@ -716,7 +716,19 @@ Na (rys.~\ref{img:ask}) przedstawiono panel umożliwiający zadawanie pytań mod
     \label{img:answer}
 \end{figure}
 
-Odpowiedzi generowane przez system są prezentowane w formie widoku przedstawionego na (rys.~\ref{img:answer}). Każda odpowiedź zawiera tytuł, treść oraz cytaty do źródłowych notatek, co umożliwia weryfikację pochodzenia informacji. Cytaty są interaktywne i po najechaniu pokazują podgląd cytowanego fragmentu notatki, a ich kliknięcie pozwala przejść bezpośrednio do oryginalnej notatki. Wybranie opcji \textbf{Add To Notes} sprawia usunięcie odpowiedzi z listy i dodanie jej do notatek, z zachowaniem jej cytowań. Dodatkowo historia pytań i odpowiedzi umożliwia przeglądanie wcześniejszych interakcji z systemem, co ułatwia kontrolę nad uzyskanymi wynikami.
+Odpowiedzi generowane przez system są prezentowane w formie widoku przedstawionego na rysunku~\ref{img:answer}. Każda odpowiedź zawiera tytuł, treść oraz cytaty do źródłowych notatek, co umożliwia weryfikację pochodzenia informacji. Cytaty są interaktywne i po najechaniu pokazują podgląd cytowanego fragmentu notatki, a ich kliknięcie pozwala przejść bezpośrednio do oryginalnej notatki. Wybranie opcji \textbf{Add To Notes} sprawia usunięcie odpowiedzi z listy i dodanie jej do notatek, z zachowaniem jej cytowań. Dodatkowo historia pytań i odpowiedzi umożliwia przeglądanie wcześniejszych interakcji z systemem, co ułatwia kontrolę nad uzyskanymi wynikami.
+
+\section{Scenariusz użytkowania}
+
+W celach demonstracyjnych w katalogu \texttt{user\_scenario} zdefiniowano przykładowy zestaw notatek w pliku \texttt{note\_set.json} oraz skrypt \texttt{upload\_notes.py}.  
+
+Po wcześniejszym utworzeniu konta użytkownika możliwe jest załadowanie przykładowego zestawu notatek do systemu poprzez wywołanie następującej komendy z katalogu głównego projektu:
+
+\begin{verbatim}
+pdm run python -m user_scenario.upload_notes
+<nazwa_użytkownika> <hasło_użytkownika> note_set.json
+\end{verbatim}
+
 
 % ===============================
 % Podsumowanie i wnioski końcowe
@@ -797,12 +809,12 @@ Ostatecznie, system NotepadLM stanowi udowodnienie koncepcji, że połączenie k
 
 
 \appendix
-\section{Przykłady szablonów zapytań}
+\chapter{Przykłady szablonów zapytań}
 \label{appendix:prompts}
 
 Poniżej przedstawiono przykładowe szablony promptów wykorzystywane w pipeline generowania odpowiedzi:
 
-\subsection{ANSWER\_PROMPT\_TEMPLATE}
+\section{ANSWER\_PROMPT\_TEMPLATE}
 \begin{verbatim}
 You are an AI assistant. Use the following documents to answer the question.
 Number each reference in order of appearance.
@@ -812,7 +824,7 @@ Documents:
 Answer:
 \end{verbatim}
 
-\subsection{AnswerSchema}
+\section{AnswerSchema}
 \begin{verbatim}
 {
     "title": "<string>",
